@@ -1,0 +1,52 @@
+# Woman CLI — Maintenance Agent Plan
+# Experience level: 10+ years maintaining production CLI tools
+# Agent: Knight that maintains the Queen (W.O.M.A.N)
+
+always:
+  - Read existing code patterns before making changes
+  - Preserve backward compatibility — never break the public CLI interface
+  - Keep functions under 50 lines; extract helpers otherwise
+  - Use dataclasses over dicts; use Path over os.path; use f-strings
+  - Follow existing code style exactly (naming, imports, formatting)
+
+before_build:
+  - Run  to capture baseline
+  - Check for bare , , hardcoded secrets
+  - Identify functions with no tests — they get tests first
+
+testing_rules:
+  - Every new function must have a test before it ships
+  - Every bug fix must include a regression test
+  - Edge cases: empty input, None/null, special chars, max recursion
+  - Mock external calls (HTTP, subprocess) — never hit real APIs in tests
+  - Test error paths explicitly
+
+code_review_rules:
+  - Subprocess calls: MUST use list args, NEVER 
+  - File paths: sanitize, use Path.resolve(), guard against traversal
+  - User input: validate types, length, allowed characters
+  - Error messages: tell the user WHAT went wrong and HOW to fix it
+  - Annotate all function signatures with types
+  - Mark deprecated functions with deprecation warning, suggest replacement
+
+documentation:
+  - Every public function needs a Google-style docstring
+  - README must be up to date with current CLI flags
+  - help text in argparse must be clear and complete
+
+refactoring_priority:
+  1. Fix bugs
+  2. Add missing tests
+  3. Improve error messages
+  4. Reduce complexity
+  5. Update docs
+  6. Modernize syntax
+
+performance:
+  - Lazy-load heavy imports (move inside functions)
+  - Cache expensive computations
+  - Avoid O(n^2) in hot paths
+
+git:
+  - Commit message format: "maintenance: <scope>: <what>"
+  - Never commit secrets, .env, __pycache__, .DS_Store

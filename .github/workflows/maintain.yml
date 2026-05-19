@@ -1,0 +1,99 @@
+name: Knight Maintains the Queen
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'
+  workflow_dispatch:
+
+jobs:
+  maintain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Knight repo (config + plan files)
+        uses: actions/checkout@v4
+        with:
+          repository: Harsha-Jay-S/Knight
+          token: ${{ secrets.GH_PAT }}
+          path: knight
+
+      - name: Checkout W.O.M.A.N at Queen (v2 code)
+        uses: actions/checkout@v4
+        with:
+          repository: Harsha-Jay-S/W.O.M.A.N
+          token: ${{ secrets.GH_PAT }}
+          ref: Queen
+          path: woman
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+
+      - name: Install Python dependencies
+        working-directory: woman
+        run: |
+          pip install --upgrade pip
+          pip install -e ".[test,ui]" 2>/dev/null || pip install pytest pytest-cov pytest-mock rich questionary
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install opencode
+        run: npm install -g @opencode-ai/plugin
+
+      - name: Configure opencode for DeepSeek V4 Flash Free
+        run: |
+          mkdir -p ~/.config/opencode
+          cp knight/opencode-config.json ~/.config/opencode/opencode.json
+
+      - name: Copy maintenance plan
+        run: cp knight/maintenance-plan.yaml woman/
+
+      - name: Phase 1 — Analyze codebase
+        working-directory: woman
+        run: |
+          python -m pytest tests/ -v --tb=short > /tmp/test_baseline.txt 2>&1 || true
+          cat /tmp/test_baseline.txt
+
+      - name: Phase 2 — Plan maintenance
+        working-directory: woman
+        run: |
+          opencode             --model zen/deepseek-v4-flash-free             -p maintenance-plan.yaml             "Analyze the woman_revamp codebase thoroughly.
+             Read all test files to check coverage.
+             Identify bugs, low-coverage areas, tech debt, and docs gaps.
+             Write a prioritized maintenance plan to /tmp/plan.md"
+
+      - name: Phase 3 — Build fixes
+        working-directory: woman
+        run: |
+          opencode             --model zen/deepseek-v4-flash-free             -p maintenance-plan.yaml             -f /tmp/plan.md             "Execute the maintenance plan at /tmp/plan.md.
+             Fix all identified issues.
+             Add missing tests.
+             Improve error handling and documentation."
+
+      - name: Phase 4 — Verify with tests
+        working-directory: woman
+        run: |
+          python -m pytest tests/ -v --tb=short --cov=woman_revamp 2>&1 | tee /tmp/test_final.txt
+
+      - name: Phase 5 — Commit, tag, and push v2-maintained
+        working-directory: woman
+        run: |
+          git config user.name "Knight Maintenance Agent"
+          git config user.email "knight@woman-cli.dev"
+
+          if ! git diff --quiet; then
+            git add -A
+            git commit -m "maintenance: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            echo "Changes committed"
+          else
+            echo "No changes this cycle"
+          fi
+
+          git tag -f v2-maintained
+          git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Harsha-Jay-S/W.O.M.A.N.git
+          git push origin --force refs/tags/v2-maintained
+          echo "Pushed v2-maintained: $(git rev-parse HEAD)"

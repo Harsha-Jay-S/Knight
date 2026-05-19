@@ -1,0 +1,301 @@
+query,candidate_command,label,os,recent_history,combined_text,heuristic_rank,token_overlap_ratio,query_length,candidate_length,has_pipe,has_sudo,has_git,has_docker,has_python,is_destructive
+find large files in current directory,find . -type f -size +100M,1,linux,"du -sh .
+ls -lah",find large files in current directory [SEP] find . -type f -size +100M,1,0.16666666666666666,6,6,0,0,0,0,0,0
+find large files in current directory,du -sh *,0,linux,"du -sh .
+ls -lah",find large files in current directory [SEP] du -sh *,2,0.0,6,2,0,0,0,0,0,0
+find large files in current directory,ps aux | grep python,0,linux,"du -sh .
+ls -lah",find large files in current directory [SEP] ps aux | grep python,3,0.0,6,4,1,0,0,0,1,0
+find large files in current directory,git clone https://github.com/user/repo.git,0,linux,"du -sh .
+ls -lah",find large files in current directory [SEP] git clone https://github.com/user/repo.git,4,0.0,6,3,0,0,1,0,0,0
+find large files in current directory,mkdir project && cd project,0,linux,"du -sh .
+ls -lah",find large files in current directory [SEP] mkdir project && cd project,5,0.0,6,4,0,0,0,0,0,0
+show disk usage for folders here,du -sh *,1,linux,"pwd
+ls",show disk usage for folders here [SEP] du -sh *,1,0.0,6,2,0,0,0,0,0,0
+show disk usage for folders here,ls -lhS,0,linux,"pwd
+ls",show disk usage for folders here [SEP] ls -lhS,2,0.0,6,2,0,0,0,0,0,0
+show disk usage for folders here,wc -l file.txt,0,linux,"pwd
+ls",show disk usage for folders here [SEP] wc -l file.txt,3,0.0,6,3,0,0,0,0,0,0
+show disk usage for folders here,tar -xzvf archive.tar.gz,0,linux,"pwd
+ls",show disk usage for folders here [SEP] tar -xzvf archive.tar.gz,4,0.0,6,3,0,0,0,0,0,0
+show disk usage for folders here,du -h,0,linux,"pwd
+ls",show disk usage for folders here [SEP] du -h,5,0.0,6,2,0,0,0,0,0,0
+search for text recursively in project,"grep -R ""TODO"" .",1,linux,"cd project
+ls -la","search for text recursively in project [SEP] grep -R ""TODO"" .",1,0.0,6,4,0,0,0,0,0,0
+search for text recursively in project,find . -type f -mtime -1,0,linux,"cd project
+ls -la",search for text recursively in project [SEP] find . -type f -mtime -1,2,0.0,6,6,0,0,0,0,0,0
+search for text recursively in project,rm -rf old_folder,0,linux,"cd project
+ls -la",search for text recursively in project [SEP] rm -rf old_folder,3,0.0,6,3,0,0,0,0,0,1
+search for text recursively in project,ip addr show,0,linux,"cd project
+ls -la",search for text recursively in project [SEP] ip addr show,4,0.0,6,3,0,0,0,0,0,0
+search for text recursively in project,mkdir project && cd project,0,linux,"cd project
+ls -la",search for text recursively in project [SEP] mkdir project && cd project,5,0.16666666666666666,6,4,0,0,0,0,0,0
+list files sorted by size,ls -lhS,1,linux,"ls
+pwd",list files sorted by size [SEP] ls -lhS,1,0.0,5,2,0,0,0,0,0,0
+list files sorted by size,ls -la,0,linux,"ls
+pwd",list files sorted by size [SEP] ls -la,2,0.0,5,2,0,0,0,0,0,0
+list files sorted by size,lsof -i :3000,0,linux,"ls
+pwd",list files sorted by size [SEP] lsof -i :3000,3,0.0,5,3,0,0,0,0,0,0
+list files sorted by size,pip install requests,0,linux,"ls
+pwd",list files sorted by size [SEP] pip install requests,4,0.0,5,3,0,0,0,0,1,0
+list files sorted by size,find . -type f -size +100M,0,linux,"ls
+pwd",list files sorted by size [SEP] find . -type f -size +100M,5,0.0,5,6,0,0,0,0,0,0
+show running python processes,ps aux | grep python,1,linux,"top
+htop",show running python processes [SEP] ps aux | grep python,1,0.25,4,4,1,0,0,0,1,0
+show running python processes,git log --oneline --graph --decorate -10,0,linux,"top
+htop",show running python processes [SEP] git log --oneline --graph --decorate -10,2,0.0,4,6,0,0,1,0,0,0
+show running python processes,tar -czvf archive.tar.gz folder/,0,linux,"top
+htop",show running python processes [SEP] tar -czvf archive.tar.gz folder/,3,0.0,4,4,0,0,0,0,0,0
+show running python processes,find . -type f -mtime -1,0,linux,"top
+htop",show running python processes [SEP] find . -type f -mtime -1,4,0.0,4,6,0,0,0,0,0,0
+show running python processes,docker build -t app:latest .,0,linux,"top
+htop",show running python processes [SEP] docker build -t app:latest .,5,0.0,4,5,0,0,0,1,0,0
+kill process on port 8000,lsof -ti :8000 | xargs kill -9,1,macos,"python app.py
+lsof -i :8000",kill process on port 8000 [SEP] lsof -ti :8000 | xargs kill -9,1,0.2,5,6,1,0,0,0,0,0
+kill process on port 8000,lsof -i :3000,0,macos,"python app.py
+lsof -i :8000",kill process on port 8000 [SEP] lsof -i :3000,2,0.0,5,3,0,0,0,0,0,0
+kill process on port 8000,python main.py,0,macos,"python app.py
+lsof -i :8000",kill process on port 8000 [SEP] python main.py,3,0.0,5,2,0,0,0,0,1,0
+kill process on port 8000,head -n 20 file.txt,0,macos,"python app.py
+lsof -i :8000",kill process on port 8000 [SEP] head -n 20 file.txt,4,0.0,5,4,0,0,0,0,0,0
+kill process on port 8000,mkdir project && cd project,0,macos,"python app.py
+lsof -i :8000",kill process on port 8000 [SEP] mkdir project && cd project,5,0.0,5,4,0,0,0,0,0,0
+find which process is using port 3000,lsof -i :3000,1,macos,"node server.js
+netstat -an",find which process is using port 3000 [SEP] lsof -i :3000,1,0.0,7,3,0,0,0,0,0,0
+find which process is using port 3000,lsof -ti :8000 | xargs kill -9,0,macos,"node server.js
+netstat -an",find which process is using port 3000 [SEP] lsof -ti :8000 | xargs kill -9,2,0.0,7,6,1,0,0,0,0,0
+find which process is using port 3000,netstat -ano | findstr LISTENING,0,macos,"node server.js
+netstat -an",find which process is using port 3000 [SEP] netstat -ano | findstr LISTENING,3,0.0,7,4,1,0,0,0,0,0
+find which process is using port 3000,sudo mkfs.ext4 /dev/sdb1,0,macos,"node server.js
+netstat -an",find which process is using port 3000 [SEP] sudo mkfs.ext4 /dev/sdb1,4,0.0,7,3,0,1,0,0,0,1
+find which process is using port 3000,"grep -R ""TODO"" .",0,macos,"node server.js
+netstat -an","find which process is using port 3000 [SEP] grep -R ""TODO"" .",5,0.0,7,4,0,0,0,0,0,0
+show current git branch,git branch --show-current,1,linux,"git status
+git log --oneline -5",show current git branch [SEP] git branch --show-current,1,0.5,4,3,0,0,1,0,0,0
+show current git branch,lsof -ti :8000 | xargs kill -9,0,linux,"git status
+git log --oneline -5",show current git branch [SEP] lsof -ti :8000 | xargs kill -9,2,0.0,4,6,1,0,0,0,0,0
+show current git branch,git status,0,linux,"git status
+git log --oneline -5",show current git branch [SEP] git status,3,0.25,4,2,0,0,1,0,0,0
+show current git branch,sudo mkfs.ext4 /dev/sdb1,0,linux,"git status
+git log --oneline -5",show current git branch [SEP] sudo mkfs.ext4 /dev/sdb1,4,0.0,4,3,0,1,0,0,0,1
+show current git branch,mkdir project && cd project,0,linux,"git status
+git log --oneline -5",show current git branch [SEP] mkdir project && cd project,5,0.0,4,4,0,0,0,0,0,0
+clone a git repository,git clone https://github.com/user/repo.git,1,linux,"pwd
+ls",clone a git repository [SEP] git clone https://github.com/user/repo.git,1,0.5,4,3,0,0,1,0,0,0
+clone a git repository,du -sh *,0,linux,"pwd
+ls",clone a git repository [SEP] du -sh *,2,0.0,4,2,0,0,0,0,0,0
+clone a git repository,rm -rf old_folder,0,linux,"pwd
+ls",clone a git repository [SEP] rm -rf old_folder,3,0.0,4,3,0,0,0,0,0,1
+clone a git repository,docker ps -a,0,linux,"pwd
+ls",clone a git repository [SEP] docker ps -a,4,0.0,4,3,0,0,0,1,0,0
+clone a git repository,docker build -t app:latest .,0,linux,"pwd
+ls",clone a git repository [SEP] docker build -t app:latest .,5,0.0,4,5,0,0,0,1,0,0
+show git commit history compact,git log --oneline --graph --decorate -10,1,linux,"git status
+git branch",show git commit history compact [SEP] git log --oneline --graph --decorate -10,1,0.2,5,6,0,0,1,0,0,0
+show git commit history compact,du -sh *,0,linux,"git status
+git branch",show git commit history compact [SEP] du -sh *,2,0.0,5,2,0,0,0,0,0,0
+show git commit history compact,wc -l file.txt,0,linux,"git status
+git branch",show git commit history compact [SEP] wc -l file.txt,3,0.0,5,3,0,0,0,0,0,0
+show git commit history compact,pip install requests,0,linux,"git status
+git branch",show git commit history compact [SEP] pip install requests,4,0.0,5,3,0,0,0,0,1,0
+show git commit history compact,git clone https://github.com/user/repo.git,0,linux,"git status
+git branch",show git commit history compact [SEP] git clone https://github.com/user/repo.git,5,0.2,5,3,0,0,1,0,0,0
+list docker containers,docker ps -a,1,linux,"docker images
+docker info",list docker containers [SEP] docker ps -a,1,0.3333333333333333,3,3,0,0,0,1,0,0
+list docker containers,docker images,0,linux,"docker images
+docker info",list docker containers [SEP] docker images,2,0.3333333333333333,3,2,0,0,0,1,0,0
+list docker containers,head -n 20 file.txt,0,linux,"docker images
+docker info",list docker containers [SEP] head -n 20 file.txt,3,0.0,3,4,0,0,0,0,0,0
+list docker containers,docker build -t app:latest .,0,linux,"docker images
+docker info",list docker containers [SEP] docker build -t app:latest .,4,0.3333333333333333,3,5,0,0,0,1,0,0
+list docker containers,ip addr show,0,linux,"docker images
+docker info",list docker containers [SEP] ip addr show,5,0.0,3,3,0,0,0,0,0,0
+build docker image with tag app latest,docker build -t app:latest .,1,linux,"Dockerfile
+docker images",build docker image with tag app latest [SEP] docker build -t app:latest .,1,0.2857142857142857,7,5,0,0,0,1,0,0
+build docker image with tag app latest,git log --oneline --graph --decorate -10,0,linux,"Dockerfile
+docker images",build docker image with tag app latest [SEP] git log --oneline --graph --decorate -10,2,0.0,7,6,0,0,1,0,0,0
+build docker image with tag app latest,rm -rf old_folder,0,linux,"Dockerfile
+docker images",build docker image with tag app latest [SEP] rm -rf old_folder,3,0.0,7,3,0,0,0,0,0,1
+build docker image with tag app latest,docker ps -a,0,linux,"Dockerfile
+docker images",build docker image with tag app latest [SEP] docker ps -a,4,0.14285714285714285,7,3,0,0,0,1,0,0
+build docker image with tag app latest,mkdir project && cd project,0,linux,"Dockerfile
+docker images",build docker image with tag app latest [SEP] mkdir project && cd project,5,0.0,7,4,0,0,0,0,0,0
+run python script in virtual environment,python main.py,1,linux,"source venv/bin/activate
+pip list",run python script in virtual environment [SEP] python main.py,1,0.16666666666666666,6,2,0,0,0,0,1,0
+run python script in virtual environment,netstat -ano | findstr LISTENING,0,linux,"source venv/bin/activate
+pip list",run python script in virtual environment [SEP] netstat -ano | findstr LISTENING,2,0.0,6,4,1,0,0,0,0,0
+run python script in virtual environment,python -m pip list,0,linux,"source venv/bin/activate
+pip list",run python script in virtual environment [SEP] python -m pip list,3,0.16666666666666666,6,4,0,0,0,0,1,0
+run python script in virtual environment,ps aux | grep python,0,linux,"source venv/bin/activate
+pip list",run python script in virtual environment [SEP] ps aux | grep python,4,0.16666666666666666,6,4,1,0,0,0,1,0
+run python script in virtual environment,"grep -R ""TODO"" .",0,linux,"source venv/bin/activate
+pip list","run python script in virtual environment [SEP] grep -R ""TODO"" .",5,0.0,6,4,0,0,0,0,0,0
+install a python package with pip,pip install requests,1,linux,"python -m venv venv
+source venv/bin/activate",install a python package with pip [SEP] pip install requests,1,0.3333333333333333,6,3,0,0,0,0,1,0
+install a python package with pip,pip uninstall requests,0,linux,"python -m venv venv
+source venv/bin/activate",install a python package with pip [SEP] pip uninstall requests,2,0.16666666666666666,6,3,0,0,0,0,1,0
+install a python package with pip,ln -s source.txt link.txt,0,linux,"python -m venv venv
+source venv/bin/activate",install a python package with pip [SEP] ln -s source.txt link.txt,3,0.0,6,4,0,0,0,0,0,0
+install a python package with pip,"grep -R ""TODO"" .",0,linux,"python -m venv venv
+source venv/bin/activate","install a python package with pip [SEP] grep -R ""TODO"" .",4,0.0,6,4,0,0,0,0,0,0
+install a python package with pip,ip addr show,0,linux,"python -m venv venv
+source venv/bin/activate",install a python package with pip [SEP] ip addr show,5,0.0,6,3,0,0,0,0,0,0
+find files modified in last day,find . -type f -mtime -1,1,linux,"date
+ls -lt",find files modified in last day [SEP] find . -type f -mtime -1,1,0.16666666666666666,6,6,0,0,0,0,0,0
+find files modified in last day,sudo mkfs.ext4 /dev/sdb1,0,linux,"date
+ls -lt",find files modified in last day [SEP] sudo mkfs.ext4 /dev/sdb1,2,0.0,6,3,0,1,0,0,0,1
+find files modified in last day,find . -type f -size +100M,0,linux,"date
+ls -lt",find files modified in last day [SEP] find . -type f -size +100M,3,0.16666666666666666,6,6,0,0,0,0,0,0
+find files modified in last day,curl -O https://example.com/file.zip,0,linux,"date
+ls -lt",find files modified in last day [SEP] curl -O https://example.com/file.zip,4,0.0,6,3,0,0,0,0,0,0
+find files modified in last day,mkdir project && cd project,0,linux,"date
+ls -lt",find files modified in last day [SEP] mkdir project && cd project,5,0.0,6,4,0,0,0,0,0,0
+create tar gz archive of folder,tar -czvf archive.tar.gz folder/,1,linux,"ls folder
+du -sh folder",create tar gz archive of folder [SEP] tar -czvf archive.tar.gz folder/,1,0.16666666666666666,6,4,0,0,0,0,0,0
+create tar gz archive of folder,git branch --show-current,0,linux,"ls folder
+du -sh folder",create tar gz archive of folder [SEP] git branch --show-current,2,0.0,6,3,0,0,1,0,0,0
+create tar gz archive of folder,dir,0,linux,"ls folder
+du -sh folder",create tar gz archive of folder [SEP] dir,3,0.0,6,1,0,0,0,0,0,0
+create tar gz archive of folder,ls -lhS,0,linux,"ls folder
+du -sh folder",create tar gz archive of folder [SEP] ls -lhS,4,0.0,6,2,0,0,0,0,0,0
+create tar gz archive of folder,mkdir project && cd project,0,linux,"ls folder
+du -sh folder",create tar gz archive of folder [SEP] mkdir project && cd project,5,0.0,6,4,0,0,0,0,0,0
+extract tar gz archive,tar -xzvf archive.tar.gz,1,linux,"ls
+file archive.tar.gz",extract tar gz archive [SEP] tar -xzvf archive.tar.gz,1,0.25,4,3,0,0,0,0,0,0
+extract tar gz archive,ls -lhS,0,linux,"ls
+file archive.tar.gz",extract tar gz archive [SEP] ls -lhS,2,0.0,4,2,0,0,0,0,0,0
+extract tar gz archive,dir,0,linux,"ls
+file archive.tar.gz",extract tar gz archive [SEP] dir,3,0.0,4,1,0,0,0,0,0,0
+extract tar gz archive,docker ps -a,0,linux,"ls
+file archive.tar.gz",extract tar gz archive [SEP] docker ps -a,4,0.0,4,3,0,0,0,1,0,0
+extract tar gz archive,tar -tzvf archive.tar.gz,0,linux,"ls
+file archive.tar.gz",extract tar gz archive [SEP] tar -tzvf archive.tar.gz,5,0.25,4,3,0,0,0,0,0,0
+download file from url,curl -O https://example.com/file.zip,1,linux,"pwd
+ls",download file from url [SEP] curl -O https://example.com/file.zip,1,0.0,4,3,0,0,0,0,0,0
+download file from url,git log --oneline --graph --decorate -10,0,linux,"pwd
+ls",download file from url [SEP] git log --oneline --graph --decorate -10,2,0.0,4,6,0,0,1,0,0,0
+download file from url,wget https://example.com/file.zip,0,linux,"pwd
+ls",download file from url [SEP] wget https://example.com/file.zip,3,0.0,4,2,0,0,0,0,0,0
+download file from url,tar -xzvf archive.tar.gz,0,linux,"pwd
+ls",download file from url [SEP] tar -xzvf archive.tar.gz,4,0.0,4,3,0,0,0,0,0,0
+download file from url,ps aux | grep python,0,linux,"pwd
+ls",download file from url [SEP] ps aux | grep python,5,0.0,4,4,1,0,0,0,1,0
+show first 20 lines of file,head -n 20 file.txt,1,linux,"wc -l file.txt
+less file.txt",show first 20 lines of file [SEP] head -n 20 file.txt,1,0.16666666666666666,6,4,0,0,0,0,0,0
+show first 20 lines of file,wc -l file.txt,0,linux,"wc -l file.txt
+less file.txt",show first 20 lines of file [SEP] wc -l file.txt,2,0.0,6,3,0,0,0,0,0,0
+show first 20 lines of file,tail -n 20 file.txt,0,linux,"wc -l file.txt
+less file.txt",show first 20 lines of file [SEP] tail -n 20 file.txt,3,0.16666666666666666,6,4,0,0,0,0,0,0
+show first 20 lines of file,git branch --show-current,0,linux,"wc -l file.txt
+less file.txt",show first 20 lines of file [SEP] git branch --show-current,4,0.0,6,3,0,0,1,0,0,0
+show first 20 lines of file,mkdir project && cd project,0,linux,"wc -l file.txt
+less file.txt",show first 20 lines of file [SEP] mkdir project && cd project,5,0.0,6,4,0,0,0,0,0,0
+count lines in file,wc -l file.txt,1,linux,"ls -lh file.txt
+cat file.txt | head",count lines in file [SEP] wc -l file.txt,1,0.0,4,3,0,0,0,0,0,0
+count lines in file,wc -w file.txt,0,linux,"ls -lh file.txt
+cat file.txt | head",count lines in file [SEP] wc -w file.txt,2,0.0,4,3,0,0,0,0,0,0
+count lines in file,pip install requests,0,linux,"ls -lh file.txt
+cat file.txt | head",count lines in file [SEP] pip install requests,3,0.0,4,3,0,0,0,0,1,0
+count lines in file,"findstr /s /i ""error"" *.log",0,linux,"ls -lh file.txt
+cat file.txt | head","count lines in file [SEP] findstr /s /i ""error"" *.log",4,0.0,4,5,0,0,0,0,0,0
+count lines in file,find . -type f -size +100M,0,linux,"ls -lh file.txt
+cat file.txt | head",count lines in file [SEP] find . -type f -size +100M,5,0.0,4,6,0,0,0,0,0,0
+make directory and move into it,mkdir project && cd project,1,linux,"pwd
+ls",make directory and move into it [SEP] mkdir project && cd project,1,0.0,6,4,0,0,0,0,0,0
+make directory and move into it,"findstr /s /i ""error"" *.log",0,linux,"pwd
+ls","make directory and move into it [SEP] findstr /s /i ""error"" *.log",2,0.0,6,5,0,0,0,0,0,0
+make directory and move into it,rm -rf old_folder,0,linux,"pwd
+ls",make directory and move into it [SEP] rm -rf old_folder,3,0.0,6,3,0,0,0,0,0,1
+make directory and move into it,git branch --show-current,0,linux,"pwd
+ls",make directory and move into it [SEP] git branch --show-current,4,0.0,6,3,0,0,1,0,0,0
+make directory and move into it,"grep -R ""TODO"" .",0,linux,"pwd
+ls","make directory and move into it [SEP] grep -R ""TODO"" .",5,0.0,6,4,0,0,0,0,0,0
+remove directory recursively,rm -rf old_folder,1,linux,"ls old_folder
+du -sh old_folder",remove directory recursively [SEP] rm -rf old_folder,1,0.0,3,3,0,0,0,0,0,1
+remove directory recursively,head -n 20 file.txt,0,linux,"ls old_folder
+du -sh old_folder",remove directory recursively [SEP] head -n 20 file.txt,2,0.0,3,4,0,0,0,0,0,0
+remove directory recursively,wc -l file.txt,0,linux,"ls old_folder
+du -sh old_folder",remove directory recursively [SEP] wc -l file.txt,3,0.0,3,3,0,0,0,0,0,0
+remove directory recursively,ps aux | grep python,0,linux,"ls old_folder
+du -sh old_folder",remove directory recursively [SEP] ps aux | grep python,4,0.0,3,4,1,0,0,0,1,0
+remove directory recursively,rmdir old_folder,0,linux,"ls old_folder
+du -sh old_folder",remove directory recursively [SEP] rmdir old_folder,5,0.0,3,2,0,0,0,0,0,0
+format drive ext4,sudo mkfs.ext4 /dev/sdb1,1,linux,"lsblk
+mount",format drive ext4 [SEP] sudo mkfs.ext4 /dev/sdb1,1,0.0,3,3,0,1,0,0,0,1
+format drive ext4,curl -O https://example.com/file.zip,0,linux,"lsblk
+mount",format drive ext4 [SEP] curl -O https://example.com/file.zip,2,0.0,3,3,0,0,0,0,0,0
+format drive ext4,pip install requests,0,linux,"lsblk
+mount",format drive ext4 [SEP] pip install requests,3,0.0,3,3,0,0,0,0,1,0
+format drive ext4,ip addr show,0,linux,"lsblk
+mount",format drive ext4 [SEP] ip addr show,4,0.0,3,3,0,0,0,0,0,0
+format drive ext4,sudo fdisk -l,0,linux,"lsblk
+mount",format drive ext4 [SEP] sudo fdisk -l,5,0.0,3,3,0,1,0,0,0,0
+show network interfaces,ip addr show,1,linux,"ping 8.8.8.8
+route -n",show network interfaces [SEP] ip addr show,1,0.3333333333333333,3,3,0,0,0,0,0,0
+show network interfaces,tar -xzvf archive.tar.gz,0,linux,"ping 8.8.8.8
+route -n",show network interfaces [SEP] tar -xzvf archive.tar.gz,2,0.0,3,3,0,0,0,0,0,0
+show network interfaces,ifconfig,0,linux,"ping 8.8.8.8
+route -n",show network interfaces [SEP] ifconfig,3,0.0,3,1,0,0,0,0,0,0
+show network interfaces,ln -s source.txt link.txt,0,linux,"ping 8.8.8.8
+route -n",show network interfaces [SEP] ln -s source.txt link.txt,4,0.0,3,4,0,0,0,0,0,0
+show network interfaces,docker build -t app:latest .,0,linux,"ping 8.8.8.8
+route -n",show network interfaces [SEP] docker build -t app:latest .,5,0.0,3,5,0,0,0,1,0,0
+show ip configuration on windows,ipconfig /all,1,windows,"ping google.com
+netstat -ano",show ip configuration on windows [SEP] ipconfig /all,1,0.0,5,2,0,0,0,0,0,0
+show ip configuration on windows,netstat -ano,0,windows,"ping google.com
+netstat -ano",show ip configuration on windows [SEP] netstat -ano,2,0.0,5,2,0,0,0,0,0,0
+show ip configuration on windows,dir,0,windows,"ping google.com
+netstat -ano",show ip configuration on windows [SEP] dir,3,0.0,5,1,0,0,0,0,0,0
+show ip configuration on windows,find . -type f -mtime -1,0,windows,"ping google.com
+netstat -ano",show ip configuration on windows [SEP] find . -type f -mtime -1,4,0.0,5,6,0,0,0,0,0,0
+show ip configuration on windows,where /r C:\ report.docx,0,windows,"ping google.com
+netstat -ano",show ip configuration on windows [SEP] where /r C:\ report.docx,5,0.0,5,4,0,0,0,0,0,0
+list directory contents on windows,dir,1,windows,"cd C:\Users
+mkdir temp",list directory contents on windows [SEP] dir,1,0.0,5,1,0,0,0,0,0,0
+list directory contents on windows,ipconfig /all,0,windows,"cd C:\Users
+mkdir temp",list directory contents on windows [SEP] ipconfig /all,2,0.0,5,2,0,0,0,0,0,0
+list directory contents on windows,where /r C:\ report.docx,0,windows,"cd C:\Users
+mkdir temp",list directory contents on windows [SEP] where /r C:\ report.docx,3,0.0,5,4,0,0,0,0,0,0
+list directory contents on windows,tree,0,windows,"cd C:\Users
+mkdir temp",list directory contents on windows [SEP] tree,4,0.0,5,1,0,0,0,0,0,0
+list directory contents on windows,"grep -R ""TODO"" .",0,windows,"cd C:\Users
+mkdir temp","list directory contents on windows [SEP] grep -R ""TODO"" .",5,0.0,5,4,0,0,0,0,0,0
+find a file by name on windows,where /r C:\ report.docx,1,windows,"dir Documents
+cd C:\",find a file by name on windows [SEP] where /r C:\ report.docx,1,0.0,7,4,0,0,0,0,0,0
+find a file by name on windows,lsof -i :3000,0,windows,"dir Documents
+cd C:\",find a file by name on windows [SEP] lsof -i :3000,2,0.0,7,3,0,0,0,0,0,0
+find a file by name on windows,"findstr /s /i ""error"" *.log",0,windows,"dir Documents
+cd C:\","find a file by name on windows [SEP] findstr /s /i ""error"" *.log",3,0.0,7,5,0,0,0,0,0,0
+find a file by name on windows,dir,0,windows,"dir Documents
+cd C:\",find a file by name on windows [SEP] dir,4,0.0,7,1,0,0,0,0,0,0
+find a file by name on windows,netstat -ano | findstr LISTENING,0,windows,"dir Documents
+cd C:\",find a file by name on windows [SEP] netstat -ano | findstr LISTENING,5,0.0,7,4,1,0,0,0,0,0
+search string in files on windows,"findstr /s /i ""error"" *.log",1,windows,"cd logs
+dir /s","search string in files on windows [SEP] findstr /s /i ""error"" *.log",1,0.0,6,5,0,0,0,0,0,0
+search string in files on windows,where /r C:\ report.docx,0,windows,"cd logs
+dir /s",search string in files on windows [SEP] where /r C:\ report.docx,2,0.0,6,4,0,0,0,0,0,0
+search string in files on windows,ipconfig /all,0,windows,"cd logs
+dir /s",search string in files on windows [SEP] ipconfig /all,3,0.0,6,2,0,0,0,0,0,0
+search string in files on windows,ls -lhS,0,windows,"cd logs
+dir /s",search string in files on windows [SEP] ls -lhS,4,0.0,6,2,0,0,0,0,0,0
+search string in files on windows,netstat -ano | findstr LISTENING,0,windows,"cd logs
+dir /s",search string in files on windows [SEP] netstat -ano | findstr LISTENING,5,0.0,6,4,1,0,0,0,0,0
+show listening ports on windows,netstat -ano | findstr LISTENING,1,windows,"tasklist
+ipconfig",show listening ports on windows [SEP] netstat -ano | findstr LISTENING,1,0.2,5,4,1,0,0,0,0,0
+show listening ports on windows,lsof -ti :8000 | xargs kill -9,0,windows,"tasklist
+ipconfig",show listening ports on windows [SEP] lsof -ti :8000 | xargs kill -9,2,0.0,5,6,1,0,0,0,0,0
+show listening ports on windows,where /r C:\ report.docx,0,windows,"tasklist
+ipconfig",show listening ports on windows [SEP] where /r C:\ report.docx,3,0.0,5,4,0,0,0,0,0,0
+show listening ports on windows,ipconfig /all,0,windows,"tasklist
+ipconfig",show listening ports on windows [SEP] ipconfig /all,4,0.0,5,2,0,0,0,0,0,0
+show listening ports on windows,dir,0,windows,"tasklist
+ipconfig",show listening ports on windows [SEP] dir,5,0.0,5,1,0,0,0,0,0,0
+create symbolic link,ln -s source.txt link.txt,1,linux,"ls -l
+readlink link.txt",create symbolic link [SEP] ln -s source.txt link.txt,1,0.0,3,4,0,0,0,0,0,0
+create symbolic link,lsof -ti :8000 | xargs kill -9,0,linux,"ls -l
+readlink link.txt",create symbolic link [SEP] lsof -ti :8000 | xargs kill -9,2,0.0,3,6,1,0,0,0,0,0
+create symbolic link,curl -O https://example.com/file.zip,0,linux,"ls -l
+readlink link.txt",create symbolic link [SEP] curl -O https://example.com/file.zip,3,0.0,3,3,0,0,0,0,0,0
+create symbolic link,find . -type f -mtime -1,0,linux,"ls -l
+readlink link.txt",create symbolic link [SEP] find . -type f -mtime -1,4,0.0,3,6,0,0,0,0,0,0
+create symbolic link,cp source.txt link.txt,0,linux,"ls -l
+readlink link.txt",create symbolic link [SEP] cp source.txt link.txt,5,0.0,3,3,0,0,0,0,0,0
