@@ -42,7 +42,7 @@ jobs:
           node-version: 20
 
       - name: Install opencode
-        run: npm install -g @opencode-ai/plugin
+        run: npm install -g opencode-ai
 
       - name: Configure opencode for DeepSeek V4 Flash Free
         run: |
