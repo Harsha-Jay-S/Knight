@@ -29,28 +29,29 @@ Run the existing test suite to establish a baseline. This catches pre-existing f
 ### Phase 2: Plan (AI Analysis — Read Only)
 
 ```bash
-opencode run --model opencode/deepseek-v4-flash-free \
+opencode run --model opencode/deepseek-v4-flash-free --variant max --agent plan \
   "$(cat maintenance-plan.yaml)
 
-   ANALYSIS ONLY — do NOT make any edits.
-   Quickly skim these key files: cli.py, engine.py, ui.py, config.py
+   Quickly skim these key files: cli.py, engine.py, ui.py, config.py, context.py, bootstrap.py
    Then check tests/*.py for coverage holes.
+   Do NOT read every file — focus on bug-prone and low-coverage areas.
    Write a prioritized maintenance plan to plan.md"
 ```
 
-The AI reads key source files and test files to identify bugs, coverage gaps, and tech debt. It writes `plan.md` — but does **not** modify any code. This phase is capped at 10 minutes.
+The AI reads key source files and test files to identify bugs, coverage gaps, and tech debt. It writes `plan.md` — but does **not** modify any code (`--agent plan` restricts edits and bash by default). This phase is capped at 10 minutes. `--variant max` ensures maximum reasoning depth.
 
 ### Phase 3: Build (AI Fixes)
 
 ```bash
-opencode run --model opencode/deepseek-v4-flash-free \
+opencode run --model opencode/deepseek-v4-flash-free --variant max \
   "$(cat maintenance-plan.yaml)
 
-   $(cat plan.md)
+   $(cat plan.md 2>/dev/null || echo "(no plan file — proceed with maintenance-plan.yaml rules)")
 
    BUILD ONLY — fix ONLY the issues listed in plan.md.
    Execute the maintenance plan at plan.md.
-   Fix all identified issues. Add missing tests."
+   Fix all identified issues. Add missing tests.
+   Improve error handling and documentation."
 ```
 
 The AI executes the plan from Phase 2 — fixing bugs, adding tests, refactoring. Each change respects the rules in `maintenance-plan.yaml`:
@@ -62,17 +63,36 @@ The AI executes the plan from Phase 2 — fixing bugs, adding tests, refactoring
 
 This phase is also capped at 10 minutes.
 
-### Phase 4: Verify + Scope Check
+### Phase 4: Verify + Coverage
 
 ```bash
+set -o pipefail
 # Create symlink so 'import woman_revamp' resolves to current directory
 mkdir -p /tmp/pylink
 ln -sf "$PWD" /tmp/pylink/woman_revamp
 PYTHONPATH=/tmp/pylink:$PYTHONPATH \
-  python -m pytest tests/ -v --tb=short --cov=.
+  python -m pytest tests/ -v --tb=short --cov=. 2>&1 | tee /tmp/test_final.txt
+echo "--- Coverage summary ---"
+grep -E "^TOTAL|^---" /tmp/test_final.txt || echo "(no coverage line found)"
 ```
 
-Run the full test suite with coverage. Then check `git diff` to enforce the 5-file / 300-line boundary. Warnings are printed if exceeded — the commit still proceeds so subsequent cycles can fix the overage.
+Run the full test suite with coverage. `tee` preserves the output for later inspection. `set -o pipefail` ensures a test failure still fails the step even though output is piped.
+
+### Phase 4b: Scope Check
+
+```bash
+CHANGED=$(git diff --name-only | wc -l)
+LINES=$(git diff --stat | tail -1 | grep -oP '\d+(?= insertions?(?!\.))' || echo 0)
+echo "Files changed: $CHANGED  |  Lines added: $LINES"
+if [ "$CHANGED" -gt 5 ]; then
+  echo ":warning: WARNING: Changed $CHANGED files (max 5 per boundaries)"
+fi
+if [ "$LINES" -gt 300 ]; then
+  echo ":warning: WARNING: Added $LINES lines (max 300 per boundaries)"
+fi
+```
+
+Check `git diff` to enforce the 5-file / 300-line boundary. Warnings are printed if exceeded — the commit still proceeds so subsequent cycles can fix the overage.
 
 **Why the symlink?** The W.O.M.A.N repo has all `.py` files at the repo root — there is no `woman_revamp/` directory. The package name comes from `pyproject.toml` via `pip install -e .`, but editable install doesn't make it importable as `woman_revamp` at test time. The symlink `/tmp/pylink/woman_revamp → $PWD` solves this.
 
@@ -80,11 +100,14 @@ Run the full test suite with coverage. Then check `git diff` to enforce the 5-fi
 
 ```bash
 git add -A
-git commit -m "maintenance: 2026-05-20 06:00 UTC — 6 files changed, 502 insertions(+), 13 deletions(-)"
+SUMMARY=$(git diff --cached --shortstat)
+git commit -m "maintenance: 2026-05-20 06:00 UTC [run:1234567890] — $SUMMARY"
 git tag -f v2-maintained
-git tag v2-maintained-2026-05-20          # dated tag for rollback
+git tag "v2-maintained-$(date -u '+%Y-%m-%d')"          # dated tag for rollback
 git push --force origin refs/tags/v2-maintained
-git push origin refs/tags/v2-maintained-2026-05-20
+git push origin "refs/tags/v2-maintained-$(date -u '+%Y-%m-%d')"
+echo "--- opencode stats ---"
+opencode stats --days 1 2>&1 || echo "(stats unavailable)"
 ```
 
 Two tags are pushed:

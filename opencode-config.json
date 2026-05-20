@@ -10,5 +10,15 @@
         }
       }
     }
+  },
+  "agent": {
+    "plan": {
+      "steps": 20,
+      "temperature": 0.1
+    },
+    "build": {
+      "steps": 30,
+      "temperature": 0.3
+    }
   }
 }

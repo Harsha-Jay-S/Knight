@@ -165,7 +165,7 @@ If either limit is hit, the cycle skips and retries in 6 hours. No crashes, no c
 Start with [ARCHITECTURE.md](ARCHITECTURE.md) for the full system design, then [BUILD_YOUR_OWN.md](BUILD_YOUR_OWN.md) to learn how to create something similar.
 
 ### Check the latest maintenance
-Go to [Harsha-Jay-S/W.O.M.A.N](https://github.com/Harsha-Jay-S/W.O.M.AAN) and look for the `v2-maintained` tag — it updates every 6 hours.
+Go to [Harsha-Jay-S/W.O.M.A.N](https://github.com/Harsha-Jay-S/W.O.M.A.N) and look for the `v2-maintained` tag — it updates every 6 hours.
 
 ### Run the workflow manually
 1. Go to Knight repo → Actions → "Knight Maintains the Queen"

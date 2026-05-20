@@ -89,11 +89,31 @@ Create `opencode-config.json`:
 ```json
 {
   "model": "opencode/deepseek-v4-flash-free",
-  "reasoningEffort": "high"
+  "provider": {
+    "opencode": {
+      "models": {
+        "deepseek-v4-flash-free": {
+          "options": {
+            "reasoningEffort": "max"
+          }
+        }
+      }
+    }
+  },
+  "agent": {
+    "plan": {
+      "steps": 20,
+      "temperature": 0.1
+    },
+    "build": {
+      "steps": 30,
+      "temperature": 0.3
+    }
+  }
 }
 ```
 
-That's it. The `opencode/` prefix uses OpenCode's built-in provider — no custom provider config, no API keys, no SDK dependencies. `reasoningEffort: "high"` tells the model to think deeply before responding. If your model doesn't support it, just use `{"model": "opencode/deepseek-v4-flash-free"}` alone.
+That's it. The `opencode/` prefix uses OpenCode's built-in provider — no custom provider config, no API keys, no SDK dependencies. `reasoningEffort: "max"` tells the model to think deeply before responding. The `agent.plan` and `agent.build` sections set per-agent step limits and temperature for deterministic analysis vs. creative building.
 
 
 ## Step 3: Set Up the GitHub Actions Scheduler
@@ -147,29 +167,39 @@ jobs:
       - name: Phase 2 — Plan (AI, read only)
         working-directory: codebase
         run: |
-          opencode run --model opencode/deepseek-v4-flash-free \
+          opencode run --model opencode/deepseek-v4-flash-free --variant max --agent plan \
             "$(cat maintenance-plan.yaml)
 
-            ANALYSIS ONLY — do NOT make any edits.
             Quickly skim source files for bugs and gaps.
             Write a prioritized plan to plan.md"
 
       - name: Phase 3 — Build (AI fixes)
         working-directory: codebase
         run: |
-          opencode run --model opencode/deepseek-v4-flash-free \
+          opencode run --model opencode/deepseek-v4-flash-free --variant max \
             "$(cat maintenance-plan.yaml)
 
-            $(cat plan.md 2>/dev/null || echo '(no plan file)')
+            $(cat plan.md 2>/dev/null || echo '(no plan file — proceed with maintenance-plan.yaml rules)')
 
             BUILD ONLY — fix ONLY what's in plan.md.
             Execute the plan. Add missing tests."
 
-      - name: Phase 4 — Verify
+      - name: Phase 4 — Verify + Coverage
         working-directory: codebase
         run: |
           set -o pipefail
           python -m pytest tests/ -v --tb=short --cov=. 2>&1 | tee /tmp/test_final.txt
+          grep -E "^TOTAL|^---" /tmp/test_final.txt || echo "(no coverage line found)"
+
+      - name: Phase 4 — Scope check
+        working-directory: codebase
+        run: |
+          CHANGED=$(git diff --name-only | wc -l)
+          LINES=$(git diff --stat | tail -1 | grep -oP '\d+(?= insertions?(?!\.))' || echo 0)
+          echo "Files changed: $CHANGED  |  Lines added: $LINES"
+          if [ "$CHANGED" -gt 5 ]; then
+            echo ":warning: WARNING: Changed $CHANGED files (max per boundaries)"
+          fi
 
       - name: Phase 5 — Tag & Push
         working-directory: codebase
@@ -179,7 +209,7 @@ jobs:
           if ! git diff --quiet; then
             git add -A
             SUMMARY=$(git diff --cached --shortstat)
-            git commit -m "maintenance: $(date -u '+%Y-%m-%d') — $SUMMARY"
+            git commit -m "maintenance: $(date -u '+%Y-%m-%d') [run:${{ github.run_id }}] — $SUMMARY"
           fi
           git tag -f maintained
           git tag "maintained-$(date -u '+%Y-%m-%d')"

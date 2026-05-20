@@ -140,7 +140,7 @@ Every term, tool, and concept in the Knight project, explained in plain English.
 **In context:** Queen is never modified by Knight. It stays as v2 forever. Knight clones Queen, makes improvements, and saves the result as a new tag (`v2-maintained`).
 
 ### The 6-Phase Cycle
-**What it is:** Knight's internal workflow — Sync, Analyze, Plan, Build, Verify, Tag & Push. Each phase has a specific purpose and output.
+**What it is:** Knight's internal workflow — Pre-flight, Analyze (baseline), Plan (AI read-only), Build (AI fixes), Verify + Scope Check, Tag & Push. Each phase has a specific purpose and output.
 
 **In context:** Every 6 hours, Knight runs through these 6 phases. The output of each phase feeds the next, creating a reliable maintenance pipeline.
 
