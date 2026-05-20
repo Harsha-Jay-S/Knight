@@ -33,6 +33,8 @@ code_review_rules:
   - Error messages: tell the user WHAT went wrong and HOW to fix it
   - Annotate all function signatures with types
   - Mark deprecated functions with deprecation warning, suggest replacement
+  - Imports: prefer module-level imports so patching works; avoid local imports inside functions
+  - Mock targets: patch at the import site (e.g., patch("questionary.confirm")) not the module attribute
 
 documentation:
   - Every public function needs a Google-style docstring
@@ -65,6 +67,8 @@ audit_priority:
   correctness:
     - "ui.py: has_rich() always returns True — check stdout.isatty() or try/except import"
     - "cli.py: variable name 'history' shadows built-in — rename to cmd_history"
+    - "cli.py: local import of questionary inside main() — tests that patch woman_revamp.cli.questionary fail"
+    - "cli.py: local import of Console inside main() — tests that patch woman_revamp.cli.Console fail"
     - "repo: 17 __pycache__/ dirs tracked in git — git rm -r --cached all of them"
     - "repo: add empty py.typed marker file for PEP 561 compliance"
     - "repo: requirements.txt is redundant (deps in pyproject.toml) — delete it"
