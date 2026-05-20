@@ -100,13 +100,17 @@ jobs:
 
           if ! git diff --quiet; then
             git add -A
-            git commit -m "maintenance: $(date -u '+%Y-%m-%d %H:%M UTC')"
+            SUMMARY=$(git diff --cached --shortstat)
+            git commit -m "maintenance: $(date -u '+%Y-%m-%d %H:%M UTC') — $SUMMARY"
             echo "Changes committed"
           else
             echo "No changes this cycle"
           fi
 
           git tag -f v2-maintained
+          git tag "v2-maintained-$(date -u '+%Y-%m-%d')"
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Harsha-Jay-S/W.O.M.A.N.git
           git push origin --force refs/tags/v2-maintained
-          echo "Pushed v2-maintained: $(git rev-parse HEAD)"
+          git push origin "refs/tags/v2-maintained-$(date -u '+%Y-%m-%d')"
+          echo "Pushed v2-maintained  : $(git rev-parse HEAD)"
+          echo "Pushed dated tag      : v2-maintained-$(date -u '+%Y-%m-%d')"

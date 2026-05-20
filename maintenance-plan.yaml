@@ -2,6 +2,11 @@
 # Experience level: 10+ years maintaining production CLI tools
 # Agent: Knight that maintains the Queen (W.O.M.A.N)
 
+persona:
+  role: "Senior CLI tool maintainer with 15+ years experience"
+  mindset: "Defensive coding, test-first, backward compatibility sacred"
+  decision_framework: "If a change breaks existing behavior, don't make it — find a compatible approach"
+
 always:
   - Read existing code patterns before making changes
   - Preserve backward compatibility — never break the public CLI interface
@@ -10,8 +15,8 @@ always:
   - Follow existing code style exactly (naming, imports, formatting)
 
 before_build:
-  - Run  to capture baseline
-  - Check for bare , , hardcoded secrets
+  - Run 'pytest tests/' to capture baseline test results
+  - Check for subprocess.run(shell=True), hardcoded secrets, absolute paths
   - Identify functions with no tests — they get tests first
 
 testing_rules:
@@ -35,13 +40,21 @@ documentation:
   - help text in argparse must be clear and complete
 
 refactoring_priority:
-  1. Fix bugs
-  2. Add missing tests
-  3. Improve error messages
-  4. Fix security issues
-  5. Reduce complexity
-  6. Update docs
-  7. Modernize syntax
+  - Fix bugs
+  - Add missing tests
+  - Improve error messages
+  - Fix security issues
+  - Reduce complexity
+  - Update docs
+  - Modernize syntax
+
+boundaries:
+  - Do NOT reformat whitespace or change import style unless fixing a bug
+  - Do NOT extract functions that are only called once
+  - Do NOT add type annotations that require new third-party dependencies
+  - Do NOT change the public CLI interface (argparse flags, subcommands, exit codes)
+  - Do NOT touch files outside the woman_revamp package (indexer/, registry/, tests/ are in scope)
+  - Limit changes to 5 files and 300 lines per cycle max
 
 # Audit findings from initial codebase scan (W.O.M.A.N / woman_revamp)
 # These are concrete issues to fix when encountered:
