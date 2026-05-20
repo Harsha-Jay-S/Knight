@@ -16,13 +16,20 @@ jobs:
           token: ${{ secrets.GH_PAT }}
           path: knight
 
-      - name: Checkout W.O.M.A.N at Queen (v2 code)
-        uses: actions/checkout@v4
-        with:
-          repository: Harsha-Jay-S/W.O.M.A.N
-          token: ${{ secrets.GH_PAT }}
-          ref: Queen
-          path: woman
+      - name: Checkout W.O.M.A.N (v2-maintained cumulative, fallback Queen)
+        env:
+          GH_TOKEN: ${{ secrets.GH_PAT }}
+        run: |
+          git clone https://github.com/Harsha-Jay-S/W.O.M.A.N.git woman --quiet
+          cd woman
+          if git ls-remote --tags origin v2-maintained 2>/dev/null | grep -q .; then
+            git fetch origin +refs/tags/v2-maintained:refs/tags/v2-maintained
+            git checkout v2-maintained
+            echo "Baseline: v2-maintained (cumulative)"
+          else
+            git checkout Queen
+            echo "Baseline: Queen (fresh — first cycle)"
+          fi
 
       - name: Setup Python 3.11
         uses: actions/setup-python@v5
