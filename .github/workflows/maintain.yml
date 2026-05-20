@@ -61,7 +61,9 @@ jobs:
       - name: Phase 2 — Plan maintenance
         working-directory: woman
         run: |
-          opencode run             --model zen/deepseek-v4-flash-free             --file maintenance-plan.yaml             --command "Analyze the woman_revamp codebase thoroughly.
+          opencode run             --model opencode/deepseek-v4-flash-free             "$(cat maintenance-plan.yaml)
+
+             Analyze the woman_revamp codebase thoroughly.
              Read all test files to check coverage.
              Identify bugs, low-coverage areas, tech debt, and docs gaps.
              Write a prioritized maintenance plan to /tmp/plan.md"
@@ -69,7 +71,11 @@ jobs:
       - name: Phase 3 — Build fixes
         working-directory: woman
         run: |
-          opencode run             --model zen/deepseek-v4-flash-free             --file maintenance-plan.yaml             --file /tmp/plan.md             --command "Execute the maintenance plan at /tmp/plan.md.
+          opencode run             --model opencode/deepseek-v4-flash-free             "$(cat maintenance-plan.yaml)
+
+          $(cat /tmp/plan.md)
+
+             Execute the maintenance plan at /tmp/plan.md.
              Fix all identified issues.
              Add missing tests.
              Improve error handling and documentation."
