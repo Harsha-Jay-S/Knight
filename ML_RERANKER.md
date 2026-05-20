@@ -9,7 +9,6 @@ woman_revamp uses a two-stage pipeline to match user queries to shell commands:
 
 This document explains both stages, the dataset, and how they work together.
 
----
 
 ## Stage 1: The Heuristic Engine
 
@@ -59,7 +58,6 @@ INTENTS = {
 }
 ```
 
----
 
 ## Stage 2: The ML Reranker
 
@@ -117,7 +115,6 @@ def rerank(candidates, features):
     return sort_by_probability(candidates, probabilities)
 ```
 
----
 
 ## The Dataset
 
@@ -154,7 +151,6 @@ def rerank(candidates, features):
 3. **Add more features** — shell type, terminal width, time of day, working directory depth
 4. **Crowdsource** — set up a feedback collection in the CLI tool
 
----
 
 ## The Hybrid Pipeline End-to-End
 
@@ -187,7 +183,6 @@ User sees: purple UI with the command
            "Execute? (y/n)"
 ```
 
----
 
 ## Why This Design
 

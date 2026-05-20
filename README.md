@@ -12,7 +12,6 @@ $ knight --status
   Cost:      $0/month
 ```
 
----
 
 ## Why This Exists
 
@@ -26,7 +25,6 @@ It runs every 6 hours on **GitHub Actions (free tier)** , studies the Queen's co
 
 The Queen never lifts a finger. That's the point.
 
----
 
 ## What Tech It Uses
 
@@ -41,7 +39,6 @@ The Queen never lifts a finger. That's the point.
 
 **Total: $0/month.**
 
----
 
 ## How It Works
 
@@ -95,7 +92,6 @@ The Queen never lifts a finger. That's the point.
     Sleep 6 hours → repeat
 ```
 
----
 
 ## Why This Is a Genius Move
 
@@ -132,7 +128,6 @@ The woman_revamp codebase uses a hybrid approach:
 
 See [ML_RERANKER.md](ML_RERANKER.md) for the full breakdown.
 
----
 
 ## What's in This Repo
 
@@ -154,7 +149,6 @@ Knight/
     └── processed_pairwise_reranker_data.csv  ← Reranker training data (300 rows)
 ```
 
----
 
 ## Rate Limit Safety
 
@@ -165,7 +159,6 @@ Knight/
 
 If either limit is hit, the cycle skips and retries in 6 hours. No crashes, no costs, no alerts.
 
----
 
 ## How to Use This Repo
 
@@ -180,7 +173,6 @@ Go to [Harsha-Jay-S/W.O.M.A.N](https://github.com/Harsha-Jay-S/W.O.M.AAN) and lo
 2. Click "Run workflow"
 3. Watch it cycle through all 6 phases
 
----
 
 <!--
 
@@ -199,13 +191,11 @@ Written almost entirely by an LLM. I (the human who prompted it into existence) 
 
 If a commit breaks something, `git revert` is your friend. The `v2-maintained` tag is force-pushed, so the previous commit is still in the reflog.
 
----
 
 ## License
 
 MIT. Use it, fork it, rename it, ignore it.
 
----
 
 <div align="center">
 

@@ -38,9 +38,26 @@ refactoring_priority:
   1. Fix bugs
   2. Add missing tests
   3. Improve error messages
-  4. Reduce complexity
-  5. Update docs
-  6. Modernize syntax
+  4. Fix security issues
+  5. Reduce complexity
+  6. Update docs
+  7. Modernize syntax
+
+# Audit findings from initial codebase scan (W.O.M.A.N / woman_revamp)
+# These are concrete issues to fix when encountered:
+audit_priority:
+  security:
+    - "cli.py: subprocess.run(shell=True) — replace with list-form args to prevent shell injection"
+    - "tests/: hardcoded /home/jayharsha paths — use tempfile or Path.home()"
+  correctness:
+    - "ui.py: has_rich() always returns True — check stdout.isatty() or try/except import"
+    - "cli.py: variable name 'history' shadows built-in — rename to cmd_history"
+  performance:
+    - "engine.py: build_vocabulary() recomputed on every process() — cache with functools.lru_cache or class attr"
+  coverage:
+    - "engine.py: 670 LOC, only 4 tests — needs tests for empty query, special chars, unicode, large input"
+    - "cli.py: 221 LOC, 0 tests — needs tests for parse(), main(), error paths"
+    - "ml/ module: verify tests exist for train(), predict(), data loading, model persistence"
 
 performance:
   - Lazy-load heavy imports (move inside functions)

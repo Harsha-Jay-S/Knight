@@ -6,7 +6,6 @@ Most maintenance systems are *reactive* — they alert a human, and the human fi
 
 This is the difference between hiring a junior dev to watch for bugs and having a senior engineer with 10+ years of experience quietly fixing them in their sleep.
 
----
 
 ## Principle 1: Zero-Cost Autonomous Upkeep
 
@@ -27,7 +26,6 @@ The system runs itself. If it fails, it retries. No alerts, no humans, no costs.
 ### Why This Matters for You
 Learning this teaches you to design systems that **use free resources to their limits**. Most people think "free tier" means "toy." Knight shows that free tiers, stacked together, can run a production-grade maintenance system indefinitely.
 
----
 
 ## Principle 2: The 10-Year Maintainer Mindset
 
@@ -61,7 +59,6 @@ Every cycle, the agent applies these rules to every file. Over a year, this catc
 ### Why This Matters for You
 This is **expertise serialization**. You can take a senior engineer's knowledge, encode it as rules, and have an AI apply them consistently across thousands of files. Learning this pattern lets you capture any expertise — security review rules, performance patterns, style conventions — and automate their enforcement.
 
----
 
 ## Principle 3: Separation of Concerns
 
@@ -86,7 +83,6 @@ This pattern generalizes to any automated modification pipeline:
 
 CI/CD pipelines, code generators, data pipelines — all follow this pattern. Knight is a concrete, working example.
 
----
 
 ## Principle 4: The Bootstrap Paradox
 
@@ -109,7 +105,6 @@ This is the bootstrap paradox solved: a system that improves its own improvement
 ### Why This Matters for You
 This is the fundamental pattern of **recursive self-improvement**. Any autonomous system worth building should be able to modify its own configuration. Knight shows how to set up this feedback loop safely (the Queen/Knight separation ensures the source of truth never gets corrupted).
 
----
 
 ## Principle 5: ML + Heuristics Hybrid
 
@@ -142,7 +137,6 @@ This hybrid approach is the industry standard for production ML:
 - ML handles the edge cases (learns from data, improves over time)
 - The fallback is always available (heuristics work offline, ML is optional)
 
----
 
 ## Principle 6: Degrade Gracefully
 
@@ -164,7 +158,6 @@ No alerts. No pager duty. The repository is never left in a broken state because
 ### Why This Matters for You
 Build systems that fail softly. A maintenance system that pages you is worse than no maintenance system.
 
----
 
 ## What You Learn from Building This
 
@@ -176,7 +169,6 @@ Build systems that fail softly. A maintenance system that pages you is worse tha
 6. **ML-in-production** — hybrid heuristics + ML pipeline from data to deployment
 7. **Self-improving systems** — the bootstrap paradox solved safely
 
----
 
 ## Why This Matters in 2026
 

@@ -2,7 +2,6 @@
 
 Every term, tool, and concept in the Knight project, explained in plain English. For when you encounter jargon you don't recognize, or want to understand why something works the way it does.
 
----
 
 ## A-Z Jargon
 
@@ -127,7 +126,6 @@ Every term, tool, and concept in the Knight project, explained in plain English.
 
 **Why it matters here:** Knight's `opencode-config.json` points to Zen's endpoint with the `deepseek-v4-flash-free` model. No API key needed for free models.
 
----
 
 ## Project-Specific Terms
 
@@ -156,7 +154,6 @@ Every term, tool, and concept in the Knight project, explained in plain English.
 
 **In context:** Rules like "never use shell=True," "every bug fix needs a regression test," "error messages must say what and how," and "never break backward compatibility" come from hard-earned experience. Knight applies them consistently every cycle.
 
----
 
 ## Why Reading and Learning from This Project Is Useful
 
@@ -217,7 +214,6 @@ This entire project — all the code, all the docs, all the architecture — was
 
 **What you learn:** The barrier to building sophisticated autonomous systems is lower than ever. The limiting factor isn't budget or infrastructure — it's understanding the patterns.
 
----
 
 > "The best way to learn is to read a working system, understand why every decision was made, and then build your own."
 

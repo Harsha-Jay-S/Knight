@@ -4,7 +4,6 @@
 
 Knight is an autonomous maintenance agent that runs as a GitHub Actions workflow. Every 6 hours, it clones the W.O.M.A.N codebase (v2 from the Queen branch), analyzes it, plans improvements, builds them, verifies with tests, and pushes the result to the `v2-maintained` tag.
 
----
 
 ## The 6-Phase Cycle
 
@@ -80,7 +79,6 @@ git push --force origin refs/tags/v2-maintained
 
 The `v2-maintained` tag is force-pushed to the W.O.M.A.N repo. This is a **moving tag** — it always points to the latest maintenance commit. Previous commits are still accessible via git reflog.
 
----
 
 ## Why GitHub Actions (Not Docker)
 
@@ -95,7 +93,6 @@ GitHub Actions wins because:
 3. No infrastructure to maintain
 4. The ephemeral nature is a feature — every cycle starts clean
 
----
 
 ## The Moving Tag Strategy
 
@@ -114,7 +111,6 @@ v2-maintained tag:
 - Each cycle adds one commit on top of the previous state.
 - The tag history is linear — you can always see what the Knight changed.
 
----
 
 ## Security Model
 
@@ -133,7 +129,6 @@ and never logged or exposed.
 - No user/admin scope
 - Expires automatically (date set at creation)
 
----
 
 ## Cross-Repo Push
 
@@ -149,7 +144,6 @@ The Knight repo workflow pushes to the W.O.M.A.N repo using the PAT:
 
 This is the only cross-repo operation. The Knight repo never needs to read from W.O.M.A.N with elevated permissions — it only needs the clone (public) and the tag push (authenticated).
 
----
 
 ## Rate Limit Engineering
 
@@ -166,7 +160,6 @@ If a rate limit is hit:
 
 This is intentional. The system degrades gracefully — maintaining code is never urgent.
 
----
 
 ## Cost Breakdown
 

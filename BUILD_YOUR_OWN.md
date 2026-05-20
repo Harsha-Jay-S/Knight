@@ -2,7 +2,6 @@
 
 This guide teaches you how to build an autonomous maintenance system like Knight from scratch. The same pattern works for any codebase, any language, any maintenance task.
 
----
 
 ## Prerequisites
 
@@ -11,7 +10,6 @@ This guide teaches you how to build an autonomous maintenance system like Knight
 - A free OpenCode Zen account (for DeepSeek V4 Flash Free)
 - Basic familiarity with YAML and git
 
----
 
 ## Step 1: Define Your Maintenance Plan
 
@@ -52,7 +50,6 @@ refactoring_priority:
 - Testing requirements (minimum coverage, mocking rules)
 - Documentation standards
 
----
 
 ## Step 2: Choose Your LLM Provider
 
@@ -102,7 +99,6 @@ Create `opencode-config.json`:
 }
 ```
 
----
 
 ## Step 3: Set Up the GitHub Actions Scheduler
 
@@ -177,7 +173,6 @@ jobs:
           git push origin --force refs/tags/maintained
 ```
 
----
 
 ## Step 4: The Moving Tag Pattern
 
@@ -201,7 +196,6 @@ git push --force origin refs/tags/maintained
 | CI trigger | Automatic on push | Manual workflow_dispatch |
 | Use case | Long-lived development | Ephemeral snapshots |
 
----
 
 ## Step 5: The Cross-Repo Authentication
 
@@ -221,7 +215,6 @@ When your workflow is in Repo A but pushes to Repo B, you need a PAT:
 3. Permission: Contents (Write)
 4. Store as: GH_PAT secret in Repo A
 
----
 
 ## Step 6: Handle Failures Gracefully
 
@@ -240,7 +233,6 @@ Add retry logic and backoff:
 
 Or simpler — just let it fail and retry next cycle. Knight uses the latter approach. Maintenance is never urgent.
 
----
 
 ## Step 7: Monitor and Iterate
 
@@ -259,7 +251,6 @@ Or simpler — just let it fail and retry next cycle. Knight uses the latter app
 | Tests fail after build | Plan didn't account for test patterns | Update maintenance-plan.yaml |
 | Rate limited | Too many cycles | Increase from 6h to 12h |
 
----
 
 ## Step 8: Evolve Your Plan
 
@@ -272,7 +263,6 @@ The maintenance plan isn't static. As you learn what works:
 
 The system maintains itself — the plan file is part of the repo, so future cycles can improve it.
 
----
 
 ## Template: Minimum Viable Maintenance Plan
 
@@ -294,7 +284,6 @@ code_review_rules:
 
 Even this minimal plan will catch 80% of common issues.
 
----
 
 ## What You Will Have Built
 
