@@ -61,24 +61,26 @@ jobs:
       - name: Phase 2 — Plan maintenance
         working-directory: woman
         run: |
-          opencode run             --model opencode/deepseek-v4-flash-free             "$(cat maintenance-plan.yaml)
+          opencode run --model opencode/deepseek-v4-flash-free "$(cat maintenance-plan.yaml)
 
-             Analyze the woman_revamp codebase thoroughly.
-             Read all test files to check coverage.
-             Identify bugs, low-coverage areas, tech debt, and docs gaps.
-             Write a prioritized maintenance plan to /tmp/plan.md"
+          Analyze all Python files in the current directory.
+          This directory IS the woman_revamp CLI package
+          (it was installed via pip install -e . — there is no woman_revamp/ subdirectory).
+          Read all test files in tests/ to check coverage.
+          Identify bugs, low-coverage areas, tech debt, and docs gaps.
+          Write a prioritized maintenance plan to /tmp/plan.md"
 
       - name: Phase 3 — Build fixes
         working-directory: woman
         run: |
-          opencode run             --model opencode/deepseek-v4-flash-free             "$(cat maintenance-plan.yaml)
+          opencode run --model opencode/deepseek-v4-flash-free "$(cat maintenance-plan.yaml)
 
           $(cat /tmp/plan.md)
 
-             Execute the maintenance plan at /tmp/plan.md.
-             Fix all identified issues.
-             Add missing tests.
-             Improve error handling and documentation."
+          Execute the maintenance plan at /tmp/plan.md.
+          Fix all identified issues.
+          Add missing tests.
+          Improve error handling and documentation."
 
       - name: Phase 4 — Verify with tests
         working-directory: woman
