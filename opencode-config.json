@@ -1,3 +1,4 @@
 {
-  "model": "opencode/deepseek-v4-flash-free"
+  "model": "opencode/deepseek-v4-flash-free",
+  "reasoningEffort": "high"
 }

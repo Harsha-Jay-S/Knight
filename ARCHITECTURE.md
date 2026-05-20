@@ -7,77 +7,91 @@ Knight is an autonomous maintenance agent that runs as a GitHub Actions workflow
 
 ## The 6-Phase Cycle
 
-### Phase 1: Sync
-
-```
-git clone --branch Queen Harsha-Jay-S/W.O.M.A.N
-```
-
-The Knight workflow checks out the W.O.M.A.N repo at the `Queen` branch. This is the frozen v2 codebase — never modified in-place. The clone is always fresh (GitHub Actions gives us a clean VM each time), ensuring every cycle starts from the exact same baseline.
-
-### Phase 2: Analyze
+### Phase 0: Pre-flight Health Check
 
 ```bash
-python -m pytest tests/ -v --tb=short
+ls *.py
+ls tests/
+python -c "import woman_revamp"
+python -m pytest --version
 ```
 
-Before making any changes, the Knight runs the existing test suite to establish a baseline. This catches pre-existing failures and provides a reference point. The test output is saved for comparison.
+Before any AI runs, the Knight validates repo structure and dependencies. This catches broken checkouts, missing files, and import failures early — so the AI never runs against a broken baseline.
 
-### Phase 3: Plan
-
-The Knight invokes opencode with the `maintenance-plan.yaml` rules and the DeepSeek V4 Flash Free model:
+### Phase 1: Analyze (Baseline)
 
 ```bash
-opencode --model zen/deepseek-v4-flash-free \
-  -p maintenance-plan.yaml \
-  "Analyze woman_revamp thoroughly. Read all test files.
-   Check coverage. Identify bugs, tech debt, docs gaps.
-   Write plan to /tmp/plan.md"
+python -m pytest tests/ -v --tb=short > /tmp/test_baseline.txt
 ```
 
-DeepSeek V4 Flash Free (284B total / 13B activated parameters) reads:
-- All Python source files in `woman_revamp/`
-- All test files in `tests/`
-- The `pyproject.toml` for dependency info
-- The latest test results
+Run the existing test suite to establish a baseline. This catches pre-existing failures and provides a reference point for later comparison. The test output is archived.
 
-It then writes `/tmp/plan.md` — a prioritized, actionable maintenance plan.
-
-### Phase 4: Build
-
-The Knight executes the plan:
+### Phase 2: Plan (AI Analysis — Read Only)
 
 ```bash
-opencode --model zen/deepseek-v4-flash-free \
-  -p maintenance-plan.yaml \
-  -f /tmp/plan.md \
-  "Execute the plan. Fix issues, add tests, improve docs."
+opencode run --model opencode/deepseek-v4-flash-free \
+  "$(cat maintenance-plan.yaml)
+
+   ANALYSIS ONLY — do NOT make any edits.
+   Quickly skim these key files: cli.py, engine.py, ui.py, config.py
+   Then check tests/*.py for coverage holes.
+   Write a prioritized maintenance plan to plan.md"
 ```
 
-DeepSeek makes all file edits — fixing bugs, adding test cases, refactoring functions, updating docstrings. Each change respects the rules in `maintenance-plan.yaml`:
+The AI reads key source files and test files to identify bugs, coverage gaps, and tech debt. It writes `plan.md` — but does **not** modify any code. This phase is capped at 10 minutes.
+
+### Phase 3: Build (AI Fixes)
+
+```bash
+opencode run --model opencode/deepseek-v4-flash-free \
+  "$(cat maintenance-plan.yaml)
+
+   $(cat plan.md)
+
+   BUILD ONLY — fix ONLY the issues listed in plan.md.
+   Execute the maintenance plan at plan.md.
+   Fix all identified issues. Add missing tests."
+```
+
+The AI executes the plan from Phase 2 — fixing bugs, adding tests, refactoring. Each change respects the rules in `maintenance-plan.yaml`:
 - No `shell=True` in subprocess calls
 - No bare `except:` clauses
 - Every new function gets a test
 - Error messages are user-friendly
+- Max 5 files and 300 lines changed per cycle
 
-### Phase 5: Verify
+This phase is also capped at 10 minutes.
+
+### Phase 4: Verify + Scope Check
 
 ```bash
-python -m pytest tests/ -v --tb=short --cov=woman_revamp
+# Create symlink so 'import woman_revamp' resolves to current directory
+mkdir -p /tmp/pylink
+ln -sf "$PWD" /tmp/pylink/woman_revamp
+PYTHONPATH=/tmp/pylink:$PYTHONPATH \
+  python -m pytest tests/ -v --tb=short --cov=.
 ```
 
-Full test suite + coverage report. If tests fail, the cycle still completes (the commit preserves the failed state for debugging), but subsequent cycles will attempt to fix the failures.
+Run the full test suite with coverage. Then check `git diff` to enforce the 5-file / 300-line boundary. Warnings are printed if exceeded — the commit still proceeds so subsequent cycles can fix the overage.
 
-### Phase 6: Tag & Push
+**Why the symlink?** The W.O.M.A.N repo has all `.py` files at the repo root — there is no `woman_revamp/` directory. The package name comes from `pyproject.toml` via `pip install -e .`, but editable install doesn't make it importable as `woman_revamp` at test time. The symlink `/tmp/pylink/woman_revamp → $PWD` solves this.
+
+### Phase 5: Tag & Push
 
 ```bash
 git add -A
-git commit -m "maintenance: 2026-05-20 06:00 UTC"
+git commit -m "maintenance: 2026-05-20 06:00 UTC — 6 files changed, 502 insertions(+), 13 deletions(-)"
 git tag -f v2-maintained
+git tag v2-maintained-2026-05-20          # dated tag for rollback
 git push --force origin refs/tags/v2-maintained
+git push origin refs/tags/v2-maintained-2026-05-20
 ```
 
-The `v2-maintained` tag is force-pushed to the W.O.M.A.N repo. This is a **moving tag** — it always points to the latest maintenance commit. Previous commits are still accessible via git reflog.
+Two tags are pushed:
+- `v2-maintained` — moving tag, always points to latest cycle
+- `v2-maintained-YYYY-MM-DD` — dated tag for rollback safety
+
+Previous commits are still accessible via git reflog and the dated tags.
 
 
 ## Why GitHub Actions (Not Docker)
@@ -120,8 +134,8 @@ Fine-grained PAT
 ├── Permission: Contents (write) + Metadata (read)
 └── Stored as: GH_PAT secret in Knight repo
 
-The PAT is encrypted by GitHub, injected at runtime,
-and never logged or exposed.
+The PAT is encrypted by GitHub, injected at runtime.
+The git remote URL uses set +x guards to prevent exposure in debug logs.
 ```
 
 - Token scoped to exactly 2 repos
@@ -137,20 +151,22 @@ The Knight repo workflow pushes to the W.O.M.A.N repo using the PAT:
 ```yaml
 - name: Push v2-maintained
   run: |
+    set +x  # hide token from debug logs
     git remote set-url origin \
       https://x-access-token:${{ secrets.GH_PAT }}@github.com/Harsha-Jay-S/W.O.M.A.N.git
+    set -x  # re-enable logging
     git push origin --force refs/tags/v2-maintained
 ```
 
-This is the only cross-repo operation. The Knight repo never needs to read from W.O.M.A.N with elevated permissions — it only needs the clone (public) and the tag push (authenticated).
+The `set +x` / `set -x` guards prevent the PAT from appearing in GitHub Actions debug logs. This is the only cross-repo operation. The Knight repo never needs to read from W.O.M.A.N with elevated permissions — it only needs the clone (public) and the tag push (authenticated).
 
 
 ## Rate Limit Engineering
 
 | Resource | Limit | Our Usage | Safety Margin |
-|---|---|---|---|
+|---|---|---|---|---|
 | GitHub Actions | 2000 min/month | 1800 min/month | 10% |
-| DeepSeek Zen | 200 req/day | 100 req/day | 50% |
+| DeepSeek Zen | 200 req/day | ~80-120 req/day (4 cycles) | 40-60% |
 
 If a rate limit is hit:
 1. The step fails with a non-zero exit code

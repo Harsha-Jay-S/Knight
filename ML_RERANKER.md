@@ -91,21 +91,24 @@ Output: reranked list (probabilities → sort)
 
 ### Training
 
-The model is trained offline using `training/train_reranker.py`:
+The model is trained offline using `training/train_reranker.py` (not yet implemented in the Queen branch):
+
+> **Note:** The training pipeline (`training/train_reranker.py`) and the model file (`ml/models/woman_reranker.joblib`) do not yet exist in the W.O.M.A.N repo. The dataset is ready in `data/processed_pairwise_reranker_data.csv`; the training code still needs to be written. The Knight's future cycles should generate this code.
 
 ```bash
+# (aspirational — training script does not exist yet)
 python training/train_reranker.py \
   --data data/processed_pairwise_reranker_data.csv \
   --output ml/models/woman_reranker.joblib
 ```
 
-The training script:
+The training script would:
 1. Loads the CSV with pandas
 2. Splits features from labels
 3. Trains a LogisticRegression (binary classifier: 1 = good match, 0 = bad)
 4. Saves the model as a joblib file
 
-### Inference
+### Inference (aspirational — requires model file)
 
 ```python
 def rerank(candidates, features):

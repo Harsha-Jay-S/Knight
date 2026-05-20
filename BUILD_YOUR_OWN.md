@@ -18,30 +18,48 @@ Create a `maintenance-plan.yaml` that encodes the rules your agent will follow. 
 ```yaml
 # maintenance-plan.yaml
 
+persona:
+  role: "Senior CLI tool maintainer with 15+ years experience"
+  mindset: "Defensive coding, test-first, backward compatibility sacred"
+  decision_framework: "If a change breaks existing behavior, don't make it"
+
 always:
   - Read existing code before making changes
   - Never break backward compatibility
   - Keep functions under 50 lines
+  - Use dataclasses over dicts; use Path over os.path; use f-strings
 
 before_build:
-  - Run the test suite first to get a baseline
+  - Review Phase 1 test baseline results (already captured — do not re-run)
+  - Check for subprocess.run(shell=True), hardcoded secrets, absolute paths
+  - Identify functions with no tests — they get tests first
 
 testing_rules:
   - Every new function needs a test
   - Every bug fix needs a regression test
   - Test error paths explicitly
+  - Mock external calls — never hit real APIs in tests
 
 code_review_rules:
-  - No shell=True in subprocess calls
-  - Use Path over os.path
-  - Annotate all function signatures
+  - Subprocess calls: MUST use list args, NEVER shell=True
+  - File paths: sanitize, use Path.resolve(), guard against traversal
+  - Error messages: tell the user WHAT went wrong and HOW to fix it
+  - Annotate all function signatures with types
 
 refactoring_priority:
-  1. Fix bugs
-  2. Add tests
-  3. Improve error messages
-  4. Reduce complexity
-  5. Update docs
+  - Fix bugs
+  - Add missing tests
+  - Improve error messages
+  - Fix security issues
+  - Reduce complexity
+  - Update docs
+  - Modernize syntax
+
+boundaries:
+  - Do NOT reformat whitespace or change import style
+  - Do NOT extract functions that are only called once
+  - Do NOT change the public CLI interface
+  - Limit changes to 5 files and 300 lines per cycle max
 ```
 
 **What to customize:**
@@ -70,34 +88,12 @@ Create `opencode-config.json`:
 
 ```json
 {
-  "provider": {
-    "zen": {
-      "npm": "@ai-sdk/openai-compatible",
-      "name": "OpenCode Zen",
-      "options": {
-        "baseURL": "https://opencode.ai/zen/v1/chat/completions"
-      },
-      "models": {
-        "deepseek-v4-flash-free": {
-          "name": "DeepSeek V4 Flash Free",
-          "limit": {
-            "context": 1048576,
-            "output": 262144
-          },
-          "options": {
-            "reasoningEffort": "max",
-            "thinking": {
-              "type": "enabled"
-            }
-          }
-        }
-      }
-    }
-  },
-  "model": "zen/deepseek-v4-flash-free",
-  "autoCompact": true
+  "model": "opencode/deepseek-v4-flash-free",
+  "reasoningEffort": "high"
 }
 ```
+
+That's it. The `opencode/` prefix uses OpenCode's built-in provider — no custom provider config, no API keys, no SDK dependencies. `reasoningEffort: "high"` tells the model to think deeply before responding. If your model doesn't support it, just use `{"model": "opencode/deepseek-v4-flash-free"}` alone.
 
 
 ## Step 3: Set Up the GitHub Actions Scheduler
@@ -131,46 +127,68 @@ jobs:
           node-version: 20
 
       - name: Install opencode
-        run: npm install -g @opencode-ai/plugin
+        run: npm install -g opencode-ai
 
-      - name: Configure provider
+      - name: Configure opencode
         run: |
           mkdir -p ~/.config/opencode
-          # Copy or create your opencode-config.json here
+          cp your-opencode-config.json ~/.config/opencode/opencode.json
 
-      - name: Analyze & Plan
+      - name: Phase 0 — Pre-flight
         working-directory: codebase
         run: |
-          opencode \
-            --model zen/deepseek-v4-flash-free \
-            -p ../maintenance-plan.yaml \
-            "Analyze the codebase. Write a plan to /tmp/plan.md"
+          ls *.py && python -m pytest --version
 
-      - name: Build
+      - name: Phase 1 — Baseline
         working-directory: codebase
         run: |
-          opencode \
-            --model zen/deepseek-v4-flash-free \
-            -p ../maintenance-plan.yaml \
-            -f /tmp/plan.md \
-            "Execute the maintenance plan."
+          python -m pytest tests/ -v --tb=short > /tmp/test_baseline.txt 2>&1 || true
 
-      - name: Test
+      - name: Phase 2 — Plan (AI, read only)
         working-directory: codebase
         run: |
-          python -m pytest || npm test || echo "No test command"
+          opencode run --model opencode/deepseek-v4-flash-free \
+            "$(cat maintenance-plan.yaml)
 
-      - name: Tag & Push
+            ANALYSIS ONLY — do NOT make any edits.
+            Quickly skim source files for bugs and gaps.
+            Write a prioritized plan to plan.md"
+
+      - name: Phase 3 — Build (AI fixes)
+        working-directory: codebase
+        run: |
+          opencode run --model opencode/deepseek-v4-flash-free \
+            "$(cat maintenance-plan.yaml)
+
+            $(cat plan.md 2>/dev/null || echo '(no plan file)')
+
+            BUILD ONLY — fix ONLY what's in plan.md.
+            Execute the plan. Add missing tests."
+
+      - name: Phase 4 — Verify
+        working-directory: codebase
+        run: |
+          set -o pipefail
+          python -m pytest tests/ -v --tb=short --cov=. 2>&1 | tee /tmp/test_final.txt
+
+      - name: Phase 5 — Tag & Push
         working-directory: codebase
         run: |
           git config user.name "Maintenance Agent"
           git config user.email "agent@your-org.com"
-          git add -A
-          git diff --quiet || git commit -m "maintenance: $(date)"
+          if ! git diff --quiet; then
+            git add -A
+            SUMMARY=$(git diff --cached --shortstat)
+            git commit -m "maintenance: $(date -u '+%Y-%m-%d') — $SUMMARY"
+          fi
           git tag -f maintained
+          git tag "maintained-$(date -u '+%Y-%m-%d')"
+          set +x
           git remote set-url origin \
             https://x-access-token:${{ secrets.GH_PAT }}@github.com/your-org/your-repo.git
+          set -x
           git push origin --force refs/tags/maintained
+          git push origin "refs/tags/maintained-$(date -u '+%Y-%m-%d')"
 ```
 
 
@@ -185,6 +203,19 @@ git tag -f maintained
 # Force push (replaces the old tag)
 git push --force origin refs/tags/maintained
 ```
+
+### Pro Tip: Dated Tags for Rollback
+
+Push a **dated tag** alongside the moving tag so you can always revert:
+
+```bash
+git tag -f maintained              # moving tag (always latest)
+git tag "maintained-$(date -u '+%Y-%m-%d')"  # dated tag (permanent)
+git push origin --force refs/tags/maintained
+git push origin "refs/tags/maintained-$(date -u '+%Y-%m-%d')"
+```
+
+To roll back: `git checkout maintained-2026-05-19`
 
 ### Why Tags Over Branches
 
@@ -269,6 +300,10 @@ The system maintains itself — the plan file is part of the repo, so future cyc
 If you want to start simple, here's a 10-line plan:
 
 ```yaml
+persona:
+  role: "Senior maintainer"
+  mindset: "Defensive, backward-compatible, test-first"
+
 always:
   - Keep backward compatibility
   - Run tests after changes
@@ -280,6 +315,10 @@ code_review_rules:
   - No shell=True
   - Handle all errors
   - Write clear error messages
+
+boundaries:
+  - Do NOT change the public API
+  - Limit to 5 files and 300 lines per cycle
 ```
 
 Even this minimal plan will catch 80% of common issues.

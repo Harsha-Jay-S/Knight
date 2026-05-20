@@ -21,7 +21,7 @@ I could have set up a CI pipeline. Written some tests. Maybe a weekly reminder.
 
 Instead I built a **Knight**.
 
-It runs every 6 hours on **GitHub Actions (free tier)** , studies the Queen's code with **DeepSeek V4 Flash Free** (via OpenCode Zen, no API key needed), fixes what's broken, writes tests for what isn't, and pushes the result back to the `v2-maintained` tag on the W.O.M.A.N repo.
+It runs every 6 hours on **GitHub Actions (free tier)** , pre-flights the repo, runs a baseline, analyzes key files with **DeepSeek V4 Flash Free** (via OpenCode Zen, no API key needed), fixes bugs and coverage gaps, and pushes the result to the `v2-maintained` and `v2-maintained-YYYY-MM-DD` tags on the W.O.M.A.N repo.
 
 The Queen never lifts a finger. That's the point.
 
@@ -48,45 +48,44 @@ The Queen never lifts a finger. That's the point.
 [GitHub Actions — cron: 0 */6 * * *]
         │
         ▼
-┌─────────────────────────────┐
-│ Phase 1: SYNC               │
-│ Clone Queen (v2 from         │
-│ W.O.M.A.N repo)              │
-└────────┬────────────────────┘
+┌──────────────────────────────────┐
+│ Phase 0: PRE-FLIGHT              │
+│ Health check: repo structure,    │
+│ deps, import verification         │
+└────────┬─────────────────────────┘
          ▼
-┌─────────────────────────────┐
-│ Phase 2: ANALYZE             │
-│ Run pytest baseline,          │
-│ read all test files,          │
-│ identify gaps                 │
-└────────┬────────────────────┘
+┌──────────────────────────────────┐
+│ Phase 1: ANALYZE (baseline)      │
+│ Run pytest baseline,              │
+│ capture pre-existing failures     │
+└────────┬─────────────────────────┘
          ▼
-┌─────────────────────────────┐
-│ Phase 3: PLAN                │
-│ opencode + DeepSeek V4 Flash │
-│ reads every file, writes     │
-│ /tmp/plan.md with priorities │
-└────────┬────────────────────┘
+┌──────────────────────────────────┐
+│ Phase 2: PLAN (AI — read only)   │
+│ opencode skims source files,     │
+│ writes plan.md with priorities   │
+│ Capped at 10 min                  │
+└────────┬─────────────────────────┘
          ▼
-┌─────────────────────────────┐
-│ Phase 4: BUILD               │
-│ opencode executes plan:      │
-│ fix bugs, add tests,         │
-│ refactor, update docs         │
-└────────┬────────────────────┘
+┌──────────────────────────────────┐
+│ Phase 3: BUILD (AI fixes)        │
+│ opencode executes plan.md:       │
+│ fix bugs, add tests, refactor    │
+│ Capped at 10 min                  │
+└────────┬─────────────────────────┘
          ▼
-┌─────────────────────────────┐
-│ Phase 5: VERIFY              │
-│ pytest --cov on full suite   │
-│ All tests must pass           │
-└────────┬────────────────────┘
+┌──────────────────────────────────┐
+│ Phase 4: VERIFY + SCOPE CHECK    │
+│ pytest --cov on full suite       │
+│ git diff — enforce 5-file limit  │
+└────────┬─────────────────────────┘
          ▼
-┌─────────────────────────────┐
-│ Phase 6: TAG & PUSH          │
-│ git tag -f v2-maintained     │
-│ git push --force origin tag  │
-│ → W.O.M.A.N repo              │
-└─────────────────────────────┘
+┌──────────────────────────────────┐
+│ Phase 5: TAG & PUSH              │
+│ git tag -f v2-maintained         │
+│ git tag v2-maintained-YYYY-MM-DD │
+│ → W.O.M.A.N repo (2 tags)        │
+└──────────────────────────────────┘
          │
          ▼
     Sleep 6 hours → repeat
@@ -155,7 +154,7 @@ Knight/
 | Limit | Free Tier | Our Usage | Headroom |
 |---|---|---|---|
 | GitHub Actions (min/month) | 2000 | ~1800 (4 cycles × ~15 min × 30 days) | 10% |
-| DeepSeek Zen (req/day) | 200 | ~100 (4 cycles × ~25 requests) | 50% |
+| DeepSeek Zen (req/day) | 200 | ~80-120 (4 cycles × ~20-30 requests) | 40-60% |
 
 If either limit is hit, the cycle skips and retries in 6 hours. No crashes, no costs, no alerts.
 

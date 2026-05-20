@@ -145,9 +145,9 @@ Every term, tool, and concept in the Knight project, explained in plain English.
 **In context:** Every 6 hours, Knight runs through these 6 phases. The output of each phase feeds the next, creating a reliable maintenance pipeline.
 
 ### The 200-Request Math
-**What it is:** The calculation that ensures the DeepSeek free tier (200 req/day) can handle Knight's workload (100 req/day).
+**What it is:** The calculation that ensures the DeepSeek free tier (200 req/day) can handle Knight's workload (~80-120 req/day).
 
-**In context:** Each maintenance cycle uses ~25 requests. At 4 cycles/day, that's 100 requests/day — well within the 200 req/day free limit. This gives a 2x safety margin.
+**In context:** Phases 0, 1, 4, and 5 use zero AI requests (they're shell/Python commands). Phase 2 (Plan) and Phase 3 (Build) each use ~10-15 opencode requests. At 4 cycles/day, that's ~80-120 requests/day — well within the 200 req/day free limit. This gives a 40-60% safety margin.
 
 ### The "10-Year Maintainer" Mindset
 **What it is:** A set of software engineering principles encoded in `maintenance-plan.yaml` that reflect decades of experience maintaining production CLI tools.

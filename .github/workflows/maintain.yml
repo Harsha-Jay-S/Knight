@@ -82,7 +82,8 @@ jobs:
 
           ANALYSIS ONLY — do NOT make any edits to files.
           This phase is for reading, analyzing, and planning only.
-          Speed is critical — you have limited time.
+          Speed is critical — you have 10 minutes max.
+          If you can't finish, focus on the top 3 most critical issues only.
 
           Quickly skim these key files for bugs and gaps:
           cli.py, engine.py, ui.py, config.py, context.py, bootstrap.py
@@ -95,6 +96,7 @@ jobs:
           Write a prioritized maintenance plan to plan.md"
 
       - name: Phase 3 — Build fixes
+        timeout-minutes: 10
         working-directory: woman
         run: |
           opencode run --model opencode/deepseek-v4-flash-free "$(cat maintenance-plan.yaml)
@@ -118,6 +120,21 @@ jobs:
           mkdir -p /tmp/pylink
           ln -sf "$PWD" /tmp/pylink/woman_revamp
           PYTHONPATH=/tmp/pylink:$PYTHONPATH python -m pytest tests/ -v --tb=short --cov=. 2>&1 | tee /tmp/test_final.txt
+          echo "--- Coverage summary ---"
+          grep -E "^TOTAL|^---" /tmp/test_final.txt || echo "(no coverage line found)"
+
+      - name: Phase 4 — Scope check
+        working-directory: woman
+        run: |
+          CHANGED=$(git diff --name-only | wc -l)
+          LINES=$(git diff --stat | tail -1 | grep -oP '\d+(?= insertions?(?!\.))' || echo 0)
+          echo "Files changed: $CHANGED  |  Lines added: $LINES"
+          if [ "$CHANGED" -gt 5 ]; then
+            echo ":warning: WARNING: Changed $CHANGED files (max 5 per boundaries)"
+          fi
+          if [ "$LINES" -gt 300 ]; then
+            echo ":warning: WARNING: Added $LINES lines (max 300 per boundaries)"
+          fi
 
       - name: Phase 5 — Commit, tag, and push v2-maintained
         working-directory: woman
@@ -136,7 +153,9 @@ jobs:
 
           git tag -f v2-maintained
           git tag "v2-maintained-$(date -u '+%Y-%m-%d')"
+          set +x  # hide token from debug logs
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Harsha-Jay-S/W.O.M.A.N.git
+          set -x  # re-enable logging
           git push origin --force refs/tags/v2-maintained
           git push origin "refs/tags/v2-maintained-$(date -u '+%Y-%m-%d')"
           echo "Pushed v2-maintained  : $(git rev-parse HEAD)"

@@ -15,7 +15,7 @@ always:
   - Follow existing code style exactly (naming, imports, formatting)
 
 before_build:
-  - Run 'pytest tests/' to capture baseline test results
+  - Review Phase 1 test baseline results (already captured — do not re-run)
   - Check for subprocess.run(shell=True), hardcoded secrets, absolute paths
   - Identify functions with no tests — they get tests first
 
@@ -65,12 +65,18 @@ audit_priority:
   correctness:
     - "ui.py: has_rich() always returns True — check stdout.isatty() or try/except import"
     - "cli.py: variable name 'history' shadows built-in — rename to cmd_history"
+    - "repo: 17 __pycache__/ dirs tracked in git — git rm -r --cached all of them"
+    - "repo: add empty py.typed marker file for PEP 561 compliance"
+    - "repo: requirements.txt is redundant (deps in pyproject.toml) — delete it"
   performance:
     - "engine.py: build_vocabulary() recomputed on every process() — cache with functools.lru_cache or class attr"
   coverage:
     - "engine.py: 670 LOC, only 4 tests — needs tests for empty query, special chars, unicode, large input"
     - "cli.py: 221 LOC, 0 tests — needs tests for parse(), main(), error paths"
+    - "tests/: missing __init__.py — create empty tests/__init__.py"
     - "ml/ module: verify tests exist for train(), predict(), data loading, model persistence"
+    - "config.py, context.py, all registry/*.py modules: zero tests — add basic unit tests"
+    - "main() in cli.py does config check + registry refresh + arg parsing — extract into separate functions"
 
 performance:
   - Lazy-load heavy imports (move inside functions)
