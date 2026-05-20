@@ -75,18 +75,23 @@ jobs:
           cat /tmp/test_baseline.txt
 
       - name: Phase 2 — Plan maintenance
+        timeout-minutes: 10
         working-directory: woman
         run: |
           opencode run --model opencode/deepseek-v4-flash-free "$(cat maintenance-plan.yaml)
 
           ANALYSIS ONLY — do NOT make any edits to files.
           This phase is for reading, analyzing, and planning only.
+          Speed is critical — you have limited time.
 
-          Analyze all Python files in the current directory.
+          Quickly skim these key files for bugs and gaps:
+          cli.py, engine.py, ui.py, config.py, context.py, bootstrap.py
+          Then check tests/*.py for coverage holes.
+          Do NOT read every file — focus on bug-prone and low-coverage areas.
+
           This directory IS the woman_revamp CLI package
           (it was installed via pip install -e . — there is no woman_revamp/ subdirectory).
-          Read all test files in tests/ to check coverage.
-          Identify bugs, low-coverage areas, tech debt, and docs gaps.
+
           Write a prioritized maintenance plan to plan.md"
 
       - name: Phase 3 — Build fixes
