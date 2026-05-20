@@ -23,6 +23,5 @@
       }
     }
   },
-  "model": "zen/deepseek-v4-flash-free",
-  "autoCompact": true
+  "model": "zen/deepseek-v4-flash-free"
 }
