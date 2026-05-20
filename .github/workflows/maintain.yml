@@ -68,16 +68,16 @@ jobs:
           (it was installed via pip install -e . — there is no woman_revamp/ subdirectory).
           Read all test files in tests/ to check coverage.
           Identify bugs, low-coverage areas, tech debt, and docs gaps.
-          Write a prioritized maintenance plan to /tmp/plan.md"
+          Write a prioritized maintenance plan to plan.md"
 
       - name: Phase 3 — Build fixes
         working-directory: woman
         run: |
           opencode run --model opencode/deepseek-v4-flash-free "$(cat maintenance-plan.yaml)
 
-          $(cat /tmp/plan.md)
+          $(cat plan.md 2>/dev/null || echo "(no plan file — proceed with maintenance-plan.yaml rules)")
 
-          Execute the maintenance plan at /tmp/plan.md.
+          Execute the maintenance plan at plan.md.
           Fix all identified issues.
           Add missing tests.
           Improve error handling and documentation."
@@ -85,7 +85,12 @@ jobs:
       - name: Phase 4 — Verify with tests
         working-directory: woman
         run: |
-          python -m pytest tests/ -v --tb=short --cov=woman_revamp 2>&1 | tee /tmp/test_final.txt
+          set -o pipefail
+          # woman_revamp is an implicit package (source at repo root, not in a subdirectory)
+          # Create a symlink so 'import woman_revamp' resolves to the current directory
+          mkdir -p /tmp/pylink
+          ln -sf "$PWD" /tmp/pylink/woman_revamp
+          PYTHONPATH=/tmp/pylink:$PYTHONPATH python -m pytest tests/ -v --tb=short --cov=. 2>&1 | tee /tmp/test_final.txt
 
       - name: Phase 5 — Commit, tag, and push v2-maintained
         working-directory: woman
