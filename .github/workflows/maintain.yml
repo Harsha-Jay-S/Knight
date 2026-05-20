@@ -52,6 +52,22 @@ jobs:
       - name: Copy maintenance plan
         run: cp knight/maintenance-plan.yaml woman/
 
+      - name: Phase 0 — Pre-flight health check
+        working-directory: woman
+        run: |
+          echo "=== Pre-flight health check ==="
+          echo "--- Python files at root ---"
+          ls *.py
+          echo "--- Tests directory ---"
+          ls tests/
+          echo "--- Package import ---"
+          python -c "import woman_revamp; print('OK: woman_revamp importable')" 2>&1 || echo "WARN: not directly importable"
+          echo "--- Test runner ---"
+          python -m pytest --version
+          echo "--- Key deps ---"
+          pip list 2>/dev/null | grep -iE "pytest|rich|questionary|pytest-cov" || echo "(none found)"
+          echo "=== Pre-flight passed ==="
+
       - name: Phase 1 — Analyze codebase
         working-directory: woman
         run: |
@@ -62,6 +78,9 @@ jobs:
         working-directory: woman
         run: |
           opencode run --model opencode/deepseek-v4-flash-free "$(cat maintenance-plan.yaml)
+
+          ANALYSIS ONLY — do NOT make any edits to files.
+          This phase is for reading, analyzing, and planning only.
 
           Analyze all Python files in the current directory.
           This directory IS the woman_revamp CLI package
@@ -76,6 +95,9 @@ jobs:
           opencode run --model opencode/deepseek-v4-flash-free "$(cat maintenance-plan.yaml)
 
           $(cat plan.md 2>/dev/null || echo "(no plan file — proceed with maintenance-plan.yaml rules)")
+
+          BUILD ONLY — fix ONLY the issues listed in plan.md.
+          Do NOT add scope beyond what's in the plan.
 
           Execute the maintenance plan at plan.md.
           Fix all identified issues.
