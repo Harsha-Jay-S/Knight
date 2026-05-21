@@ -83,8 +83,7 @@ The Queen never lifts a finger. That's the point.
 ┌──────────────────────────────────┐
 │ Phase 5: TAG & PUSH              │
 │ git tag -f v2-maintained         │
-│ git tag v2-maintained-YYYY-MM-DD │
-│ → W.O.M.A.N repo (2 tags)        │
+│ → W.O.M.A.N repo                 │
 └──────────────────────────────────┘
          │
          ▼

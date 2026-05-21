@@ -159,13 +159,10 @@ jobs:
           fi
 
           git tag -f v2-maintained
-          git tag "v2-maintained-$(date -u '+%Y-%m-%d')"
           set +x  # hide token from debug logs
           git remote set-url origin https://x-access-token:${{ secrets.GH_PAT }}@github.com/Harsha-Jay-S/W.O.M.A.N.git
           set -x  # re-enable logging
           git push origin --force refs/tags/v2-maintained
-          git push origin "refs/tags/v2-maintained-$(date -u '+%Y-%m-%d')"
           echo "Pushed v2-maintained  : $(git rev-parse HEAD)"
-          echo "Pushed dated tag      : v2-maintained-$(date -u '+%Y-%m-%d')"
           echo "--- opencode stats ---"
           opencode stats --days 1 2>&1 || echo "(stats unavailable)"

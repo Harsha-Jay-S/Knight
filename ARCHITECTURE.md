@@ -103,18 +103,12 @@ git add -A
 SUMMARY=$(git diff --cached --shortstat)
 git commit -m "maintenance: 2026-05-20 06:00 UTC [run:1234567890] — $SUMMARY"
 git tag -f v2-maintained
-git tag "v2-maintained-$(date -u '+%Y-%m-%d')"          # dated tag for rollback
 git push --force origin refs/tags/v2-maintained
-git push origin "refs/tags/v2-maintained-$(date -u '+%Y-%m-%d')"
 echo "--- opencode stats ---"
 opencode stats --days 1 2>&1 || echo "(stats unavailable)"
 ```
 
-Two tags are pushed:
-- `v2-maintained` — moving tag, always points to latest cycle
-- `v2-maintained-YYYY-MM-DD` — dated tag for rollback safety
-
-Previous commits are still accessible via git reflog and the dated tags.
+One tag is pushed: `v2-maintained` — moving tag, always points to the latest cycle. Previous commits are still accessible via git reflog.
 
 
 ## Why GitHub Actions (Not Docker)

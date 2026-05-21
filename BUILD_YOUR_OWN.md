@@ -212,13 +212,11 @@ jobs:
             git commit -m "maintenance: $(date -u '+%Y-%m-%d') [run:${{ github.run_id }}] — $SUMMARY"
           fi
           git tag -f maintained
-          git tag "maintained-$(date -u '+%Y-%m-%d')"
           set +x
           git remote set-url origin \
             https://x-access-token:${{ secrets.GH_PAT }}@github.com/your-org/your-repo.git
           set -x
           git push origin --force refs/tags/maintained
-          git push origin "refs/tags/maintained-$(date -u '+%Y-%m-%d')"
 ```
 
 
@@ -234,18 +232,14 @@ git tag -f maintained
 git push --force origin refs/tags/maintained
 ```
 
-### Pro Tip: Dated Tags for Rollback
+### Rollback via Reflog
 
-Push a **dated tag** alongside the moving tag so you can always revert:
+Every force-push overwrites the tag, but the previous commit isn't lost:
 
 ```bash
-git tag -f maintained              # moving tag (always latest)
-git tag "maintained-$(date -u '+%Y-%m-%d')"  # dated tag (permanent)
-git push origin --force refs/tags/maintained
-git push origin "refs/tags/maintained-$(date -u '+%Y-%m-%d')"
+git reflog show refs/tags/maintained
+git checkout <old-sha>
 ```
-
-To roll back: `git checkout maintained-2026-05-19`
 
 ### Why Tags Over Branches
 
